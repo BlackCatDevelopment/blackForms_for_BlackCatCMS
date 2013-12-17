@@ -1,0 +1,9 @@
+@import url(nav.css);
+@import url(common.css);
+@import url(formfix.css);
+
+div#mod_blackforms table{width:99%;margin:auto;}
+div#mod_blackforms tr, div#mod_blackforms th, div#mod_blackforms td{margin:0;padding:0;vertical-align:middle;}
+div#mod_blackforms th{font-weight:900;background-color:#ccc;text-align:left;padding:5px;}
+div#mod_blackforms td{padding:0 5px;}
+div#mod_blackforms .icon{font-size:1.5em;}

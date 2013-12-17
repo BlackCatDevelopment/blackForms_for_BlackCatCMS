@@ -1,0 +1,17 @@
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'success_page', '6');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'ui_theme', 'dot-luv');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'captcha', 'n');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'attachment_maxsize', '1024');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'attachments', 'y');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'attachment_types', '');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'send_mail', 'y');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'mail_to', '');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'mail_from', '');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'mail_from_name', '');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'mail_subject', '');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'success_send_mail', '');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'success_mail_to', '');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'success_mail_from', '');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'success_mail_from_name', '');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'success_mail_body', '');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (35, 'success_page', '');

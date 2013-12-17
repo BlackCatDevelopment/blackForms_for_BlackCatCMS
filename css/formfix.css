@@ -1,0 +1,22 @@
+/*
+    UI fixes for BlackCat CMS
+    Backend Theme "FreshCat" and
+    Frontend Theme "Mojito"
+*/
+
+/* Backend only */
+div.fc_blocks_content div#mod_blackforms div.fbform{width:80% !important;}
+div.fc_blocks_content div#mod_blackforms input[type="text"], div.fc_blocks_content div#mod_blackforms select, div.fc_blocks_content div#mod_blackforms textarea{width:40em;margin:3px;}
+div.fc_blocks_content div#mod_blackforms div.select2-container{width:40em !important;margin-left:-2px;}
+
+div.fc_blocks_content div#mod_blackforms fieldset, section#content.gradient_gray fieldset{margin-left:10px;padding:15px;}
+div.fc_blocks_content div#mod_blackforms legend, section#content.gradient_gray legend{margin-left:15px;text-shadow:none;}
+div.fc_blocks_content div#mod_blackforms label, section#content.gradient_gray label{vertical-align: top;}
+div.fc_blocks_content div#mod_blackforms .fbselect, section#content.gradient_gray .fbselect{margin-bottom:15px;margin-top:5px;}
+div.fc_blocks_content div#mod_blackforms button.ui-button, section#content.gradient_gray button.ui-button{padding:5px; margin:15px;}
+div.fc_blocks_content div#mod_blackforms .ui-buttonset, section#content.gradient_gray .ui-buttonset{margin-top:10px;}
+div.fc_blocks_content div#mod_blackforms .ui-button,section#content.gradient_gray .ui-button{text-shadow:none;}
+div.fc_blocks_content div#mod_blackforms .fblabel, section#content.gradient_gray .fblabel{width: 250px;display: inline-block;text-align: right;font-weight: 900;}
+
+/* Frontend */
+section#content.gradient_gray div.fbform{width:100% !important;}
