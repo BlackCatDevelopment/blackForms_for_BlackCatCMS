@@ -45,6 +45,8 @@ if (defined('CAT_PATH')) {
 }
 
 define('WBLIB_PATH', CAT_PATH.'/modules/lib_wblib/wblib');
+define('WBLIB_URL',  CAT_URL.'/modules/lib_wblib/wblib');
+define('BFORM_URL', $_SERVER['SCRIPT_NAME'].'?page_id='.$page_id );
 
 // template engine defaults
 global $parser, $page_id;

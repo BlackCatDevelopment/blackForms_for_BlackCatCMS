@@ -44,3 +44,33 @@ if (defined('CAT_PATH')) {
     if (!$inc) trigger_error(sprintf("[ <b>%s</b> ] Can't include class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
 }
 
+// ----- import tables -----
+include_once WB_PATH.'/modules/lib_wblib/wblib/wbQuery.php';
+$db = \wblib\wbQuery::getInstance(
+    array(
+        'host'   => CAT_DB_HOST,
+        'user'   => CAT_DB_USERNAME,
+        'pass'   => CAT_DB_PASSWORD,
+        'dbname' => CAT_DB_NAME,
+        'prefix' => CAT_TABLE_PREFIX,
+    )
+);
+$import = file_get_contents( dirname(__FILE__)."/install/structure.sql" );
+_ar_import($import);
+$import = file_get_contents( dirname(__FILE__)."/install/data.sql" );
+_ar_import($import);
+
+function _ar_import($import) {
+    global $db;
+    $import = preg_replace( "%/\*(.*)\*/%Us", ''              , $import );
+    $import = preg_replace( "%^--(.*)\n%mU" , ''              , $import );
+    $import = preg_replace( "%^$\n%mU"      , ''              , $import );
+    $import = preg_replace( "%cat_%"        , CAT_TABLE_PREFIX, $import );
+    $import = preg_replace( "%\r?\n%"       , ''              , $import );
+    $import = explode (";", $import);
+    foreach ($import as $imp){
+        if ($imp != '' && $imp != ' '){
+            $ret = $db->query($imp);
+        }
+    }
+}   // end function _ar_import()

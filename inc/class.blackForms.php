@@ -88,6 +88,7 @@ class blackForms {
         // initialize form
         $this->form = \wblib\wbForms::getInstanceFromFile('inc.forms.php',dirname(__FILE__).'/../forms');
         $this->form->set('lang_path',dirname(__FILE__).'/../languages');
+        $this->form->set('wblib_url',WBLIB_URL);
         $this->form->setAttr('action',$_SERVER['SCRIPT_NAME']);
 
     }   // end function __construct()
@@ -108,34 +109,40 @@ class blackForms {
 
         // count items
         $_tpl_data['item_count'] = $this->getItemCount();
+        $_tpl_data['version']    = CAT_Helper_Addons::getModuleVersion('blackForms');
 
-        if(isset($_REQUEST['do']))
+        // do not allow to open any tab if there is no form yet
+        if(!$this->hasform())
         {
-            switch ($_REQUEST['do'])
-            {
-                case 'options':
-                    $this->options();
-                    break;
-                case 'preview':
-                    $this->preview();
-                    break;
-                case 'entries':
-                    $this->entries();
-                    break;
-                case 'exports':
-                    $this->exports();
-                    break;
-                case 'form':
-                    $this->editform();
-            	   	break;
-            }
+            $this->select_preset();
         }
         else
         {
-            if(!$this->hasform())
-                $this->select_preset();
+            if(isset($_REQUEST['do']))
+            {
+                switch ($_REQUEST['do'])
+                {
+                    case 'options':
+                        $this->options();
+                        break;
+                    case 'preview':
+                        $this->preview();
+                        break;
+                    case 'entries':
+                        $this->entries();
+                        break;
+                    case 'exports':
+                        $this->exports();
+                        break;
+                    case 'form':
+                        $this->editform();
+                	   	break;
+                }
+            }
             else
+            {
                 $this->entries();
+            }
         }
 
         global $parser;
@@ -241,7 +248,11 @@ class blackForms {
 
         $current = $this->get_settings();
         foreach($current as $key => $value)
-            $this->form->getElement($key)->setValue($value);
+        {
+            $elem = $this->form->getElement($key);
+            if(is_object($elem))
+                $elem->setValue($value);
+        }
 
         $_tpl_data['current_tab'] = 'options';
 
@@ -260,13 +271,23 @@ class blackForms {
             foreach($options as $key => $value)
             {
                 if(!array_key_exists($key,$current))
-                    continue;
-                $this->bcf_dbh->replace(
-                    array(
-                        'tables' => 'mod_blackforms_settings',
-                        'values' => array($section_id,$key,$value)
-                    )
-                );
+                {
+                    $this->bcf_dbh->insert(
+                        array(
+                            'tables' => 'mod_blackforms_settings',
+                            'values' => array($section_id,$key,$value)
+                        )
+                    );
+                }
+                else
+                {
+                    $this->bcf_dbh->replace(
+                        array(
+                            'tables' => 'mod_blackforms_settings',
+                            'values' => array($section_id,$key,$value)
+                        )
+                    );
+                }
                 if($this->bcf_dbh->isError())
                     $errors[] = $this->bcf_dbh->getError();
                 else
@@ -312,6 +333,11 @@ class blackForms {
             = 'Das Bearbeiten des Formulars ist derzeit leider noch nicht m&ouml;glich. (Verwendete Vorlage: '
             . $config[0]['preset_name']
             . ')';
+        $_tpl_data['content']
+            = '<button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary" '
+            . 'name="preview" onclick="window.location=\''.BFORM_URL.'&amp;do=preview\';return true;">'
+            . $this->form->t("Preview")
+            . '</button>';
     }   // end function editform()
 
     /**
@@ -320,6 +346,7 @@ class blackForms {
     private function select_preset()
     {
         global $_tpl_data, $section_id, $page_id;
+        $_tpl_data['current_tab'] = 'form';
         $this->form->setForm('preset');
         if($this->form->isSent() && $this->form->isValid())
         {
@@ -338,7 +365,7 @@ class blackForms {
                 )
             );
             if(!$this->bcf_dbh->isError())
-                return $this->editform();
+                return $this->options();
         }
 
         $presets = $this->bcf_dbh->search(
@@ -388,7 +415,6 @@ class blackForms {
         $this->form->configure($r[0]['preset_name'],unserialize($config));
         $this->form->setForm($r[0]['preset_name']);
 
-        $_tpl_data['current_tab'] = 'preview';
         $_tpl_data['form'] = $this->form->getForm();
         $_tpl_data['info'] = $this->form->t('This is a preview of your form. The presentation in the frontend may differ.');
     }   // end function editform()
@@ -499,8 +525,10 @@ class blackForms {
                     'params' => $_GET['view']
                 )
             );
+            $_tpl_data['allow_reply'] = true;
             if(count($rep))
             {
+                $_tpl_data['allow_reply'] = false;
                 $this->form->setForm('reply');
                 $fields = $this->form->getElements(1,1);
                 $map    = array();

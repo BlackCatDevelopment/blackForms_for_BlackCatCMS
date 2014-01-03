@@ -1,13 +1,14 @@
 var validator = jQuery("#settings").validate({
      errorClass: "bform_error"
     ,validClass: "bform_success"
-//    ,debug: true // just for the demos, avoids form submit
+//    ,debug: true // just for testing, avoids form submit
     ,errorPlacement: function(error, element) {
         error.insertAfter(element);
         error.before('<br />');
     }
     ,rules: {
          mail_to: {required: "#send_mail_y:checked", email: true}
+        ,mail_from: { email: true }
         ,success_mail_to: {required: "#success_send_mail_y:checked", email: true}
         ,success_mail_to_field: {required: "#success_send_mail_y:checked"}
         ,success_mail_from: {required: "#success_send_mail_y:checked", email: true}

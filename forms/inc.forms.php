@@ -76,6 +76,7 @@ $FORMS = array(
             'allow'    => 'email',
             'required' => true,
             'title'    => 'Please note: The recipient will see this mail address in his mail client!',
+            'invalid'  => 'Invalid eMail address, please check your data',
         ),
         array(
             'type'     => 'text',
