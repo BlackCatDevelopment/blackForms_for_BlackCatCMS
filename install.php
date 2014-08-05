@@ -20,7 +20,7 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  *
  *   @author          Bianka Martinovic
- *   @copyright       2013, Black Cat Development
+ *   @copyright       2014, Black Cat Development
  *   @link            http://blackcat-cms.org
  *   @license         http://www.gnu.org/licenses/gpl.html
  *   @category        CAT_Modules
@@ -56,21 +56,21 @@ $db = \wblib\wbQuery::getInstance(
     )
 );
 $import = file_get_contents( dirname(__FILE__)."/install/structure.sql" );
-_ar_import($import);
-$import = file_get_contents( dirname(__FILE__)."/install/data.sql" );
-_ar_import($import);
+$db->sqlImport($import,'cat_',CAT_TABLE_PREFIX);
 
-function _ar_import($import) {
-    global $db;
-    $import = preg_replace( "%/\*(.*)\*/%Us", ''              , $import );
-    $import = preg_replace( "%^--(.*)\n%mU" , ''              , $import );
-    $import = preg_replace( "%^$\n%mU"      , ''              , $import );
-    $import = preg_replace( "%cat_%"        , CAT_TABLE_PREFIX, $import );
-    $import = preg_replace( "%\r?\n%"       , ''              , $import );
-    $import = explode (";", $import);
-    foreach ($import as $imp){
-        if ($imp != '' && $imp != ' '){
-            $ret = $db->query($imp);
+$import = file_get_contents( dirname(__FILE__)."/install/data.sql" );
+$db->sqlImport($import,'cat_',CAT_TABLE_PREFIX);
+
+// add files to class_secure
+$addons_helper = new CAT_Helper_Addons();
+foreach(
+	array(
+		'ajax/ajax_save.php',
+	)
+	as $file
+) {
+	if ( false === $addons_helper->sec_register_file( 'blackForms', $file ) )
+	{
+		 error_log( "Unable to register file -$file-!" );
         }
     }
-}   // end function _ar_import()

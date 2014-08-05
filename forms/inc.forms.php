@@ -120,6 +120,104 @@ $FORMS = array(
         ),
     ),
 
+    'reset_form'  => array(
+        array(
+            'type'     => 'submit',
+            'name'     => 'reset',
+            'label'    => 'Reset to preset'
+        ),
+    ),
+
+    'add_element' => array(
+        array(
+            'type'     => 'hidden',
+            'name'     => 'preset_id',
+        ),
+        array(
+            'type'     => 'text',
+            'name'     => 'name',
+            'label'    => 'Element (field) name',
+            'allow'    => 'text',
+            'required' => true,
+        ),
+        array(
+            'type'     => 'select',
+            'name'     => 'type',
+            'label'    => 'Type',
+            'options'  => array(
+                'text'          => 'Edit field (one line)',
+                'textarea'      => 'Text field (multiline)',
+                'select'        => 'Select (Dropdown)',
+                'radiogroup'    => 'Radiogroup',
+                'checkboxgroup' => 'Checkboxgroup',
+                'legend'        => 'Legend',
+                'info'          => 'Infotext',
+            ),
+        ),
+        array(
+            'type'     => 'text',
+            'name'     => 'label',
+            'label'    => 'Label',
+            'allow'    => 'text',
+            'required' => true,
+        ),
+        array(
+            'type'     => 'radiogroup',
+            'name'     => 'required',
+            'label'    => 'Required',
+            'options'  => array('Y'=>'Yes','N'=>'No'),
+        ),
+        array(
+            'type'     => 'select',
+            'name'     => 'where',
+            'label'    => 'Position',
+            'options'  => array(
+                'top'    => 'on top',
+                'bottom' => 'at bottom',
+                'after'  => 'after...',
+            ),
+            'selected' => 'after',
+        ),
+        array(
+            'type'     => 'select',
+            'name'     => 'after',
+            'label'    => 'Field',
+            'options'  => array(),
+        ),
+    ),
+
+    'edit_element' => array(
+        array(
+            'type'     => 'hidden',
+            'name'     => 'preset_id',
+        ),
+        array(
+            'type'     => 'text',
+            'name'     => 'name',
+            'label'    => 'Element (field) name',
+            'allow'    => 'text',
+            'required' => true,
+            'disabled' => true,
+        ),
+        array(
+            'type'     => 'info',
+            'label'    => 'Please note: You cannot edit the field name because it makes old form submissions invalid',
+        ),
+        array(
+            'type'     => 'text',
+            'name'     => 'label',
+            'label'    => 'Label',
+            'allow'    => 'text',
+            'required' => true,
+        ),
+        array(
+            'type'     => 'radiogroup',
+            'name'     => 'required',
+            'label'    => 'Required',
+            'options'  => array('Y'=>'Yes','N'=>'No'),
+        ),
+    ),
+
     'settings' => array(
         array(
             'type'     => 'legend',
@@ -136,17 +234,17 @@ $FORMS = array(
         ),
         array(
             'type'     => 'radiogroup',
-            'name'     => 'captcha',
-            'label'    => 'Use Captcha',
-            'title'    => 'Uses a Captcha to protect your form against spam',
-            'options'  => array( 'y' => 'Yes', 'n' => 'No' ),
-            'checked'  => 'y',
+            'name'     => 'protection',
+            'label'    => 'Protect form with',
+            'title'    => 'How to protect your form. Honeypot (ASP) is non-obstrusive and a workable compromise, as many people feel bothered by Captchas.',
+            'options'  => array( '' => 'no protection', 'honeypot' => 'Honeypot (ASP)', 'wb_captcha' => 'WB style Captcha' ),
+            'checked'  => '',
         ),
         array(
             'type'     => 'radiogroup',
             'name'     => 'attachments',
             'label'    => 'Allow attachments',
-            'title'    => 'Do you wish to allow to send (=upload) files?',
+            'title'    => 'Do you wish to allow to send (=upload) files? Please note: Attachments are potentially harmful and are uploaded to your server!',
             'options'  => array( 'y' => 'Yes', 'n' => 'No' ),
             'checked'  => 'n',
         ),
@@ -273,6 +371,12 @@ $FORMS = array(
             'type'     => 'textarea',
             'name'     => 'success_mail_body',
             'label'    => 'Mail body',
+            'allow'    => 'plain',
+        ),
+        array(
+            'type'     => 'textarea',
+            'name'     => 'success_message',
+            'label'    => 'Success message',
             'allow'    => 'plain',
         ),
         array(

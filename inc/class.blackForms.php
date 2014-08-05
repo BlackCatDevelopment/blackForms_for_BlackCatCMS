@@ -91,6 +91,8 @@ class blackForms {
         $this->form->set('wblib_url',WBLIB_URL);
         $this->form->setAttr('action',$_SERVER['SCRIPT_NAME']);
 
+        \wblib\wbFormsJQuery::set('core_cdn',CAT_URL.'/modules/lib_jquery/jquery-core/jquery-core.min.js');
+        \wblib\wbFormsJQuery::set('ui_cdn',CAT_URL.'/modules/lib_jquery/jquery-ui/ui/jquery-ui.min.js');
     }   // end function __construct()
 
     /**
@@ -176,7 +178,7 @@ class blackForms {
                     array(
                         'tables' => 'mod_blackforms_submissions',
                         'fields' => array('section_id','submitted_when','submitted_by','data_serialized'),
-                        'values' => array($section_id,time(),$user_id,serialize($this->form->getData()))
+                        'values' => array($section_id,time(),$user_id,serialize($this->form->getData(1)))
                     )
                 );
                 if($this->bcf_dbh->isError())
@@ -186,13 +188,24 @@ class blackForms {
                 else
                 {
                     $settings = $this->get_settings();
-                    if(isset($settings['success_page']) && $settings['success_page'] !== '')
+                    if(isset($settings['success_page']) && $settings['success_page'] !== '' && $settings['success_page'] !== '0')
                     {
                         echo "<script type='text/javascript'>location.href='".CAT_Helper_Page::getLink($settings['success_page'])."';</script>";
                     }
+                    else
+                    {
+                        $_tpl_data['info'] = $this->form->t('Form submission succeeded');
+                        $_tpl_data['content'] = $this->form->t($settings['success_message']);
+                    }
                 }
             }
-            echo $this->form->getForm();
+            else
+            {
+                $this->form->setData($this->form->getData(1));
+                $_tpl_data['form'] = $this->form->getForm();
+            }
+            global $parser;
+            $parser->output('fe_view.tpl',$_tpl_data);
         }
     }   // end function frontend()
     
@@ -235,17 +248,30 @@ class blackForms {
 
         // field selection for mail_to field
         $this->load_form();
-        $fields = $this->form->getElements(1,1);
+        $fields = $this->form->getElements(1,1,'FORMS');
         $fsel   = array();
         foreach(array_values($fields) as $item)
             $fsel[$item['name']] = $item['name'];
+        $page_select = CAT_Helper_Page::getPageSelect(1);
 
+        // add option 'none' to page select
+        $page_select[0] = $this->form->t('[please choose one...]');
+
+        // create form and set default values
         $this->form->setForm('settings');
         $this->form->setAttr('action',$_SERVER['SCRIPT_NAME']);
         $this->form->getElement('page_id')->setAttr('value',$page_id);
-        $this->form->getElement('success_page')->setAttr('options',CAT_Helper_Page::getPageSelect(1));
+        $this->form->getElement('success_page')->setAttr('options',$page_select);
+        $this->form->getElement('success_page')->setAttr('index_as_value',true);
         $this->form->getElement('success_mail_to_field')->setAttr('options',$fsel);
 
+        // check if SecurImage is present
+        if(CAT_Helper_Addons::isModuleInstalled('lib_securimage'))
+        {
+            $this->form->getElement('protection')->addOption('bc_captcha','SecurImage Captcha');
+        }
+
+        // set current values
         $current = $this->get_settings();
         foreach($current as $key => $value)
         {
@@ -256,8 +282,10 @@ class blackForms {
 
         $_tpl_data['current_tab'] = 'options';
 
+        // if the form is sent...
         if($this->form->isSent() && $this->form->isValid())
         {
+            // ...get data
             $options = $this->form->getData();
             $errors  = array();
             // delete old settings
@@ -268,6 +296,7 @@ class blackForms {
                     'params' => $section_id
                 )
             );
+            // save new settings
             foreach($options as $key => $value)
             {
                 if(!array_key_exists($key,$current))
@@ -314,30 +343,44 @@ class blackForms {
         // make sure we already have a form here
         global $_tpl_data, $section_id, $page_id;
         $_tpl_data['current_tab'] = 'form';
+
         if(!$this->hasform())
             return $this->select_preset();
 
-        $config = $this->bcf_dbh->search(
-            array(
-                'fields' => array('preset_name'),
-                'tables' => array(
-                    'mod_blackforms_forms',
-                    'mod_blackforms_presets',
-                ),
-                'join'   => 't1.preset == t2.preset_id',
-                'where'  => 'section_id == ?',
-                'params' => $section_id
-            )
-        );
+        // load preview
+        $data   = $this->preview(true);
+        $config = ($data['config'] != '') // modified
+                ?  $data['config']    // original preset
+                :  $data['preset_data']
+                ;
+        $config = unserialize($config);
+
+        $this->form->setForm('reset_form');
         $_tpl_data['info']
-            = 'Das Bearbeiten des Formulars ist derzeit leider noch nicht m&ouml;glich. (Verwendete Vorlage: '
-            . $config[0]['preset_name']
-            . ')';
-        $_tpl_data['content']
-            = '<button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary" '
-            . 'name="preview" onclick="window.location=\''.BFORM_URL.'&amp;do=preview\';return true;">'
-            . $this->form->t("Preview")
-            . '</button>';
+            = 'Verwendete Vorlage: '
+            . $data['preset_name']
+            . '<br />'
+            . $this->form->getForm()
+            ;
+
+        $this->form->setForm($data['preset_name']);
+        $elements = $this->form->getElements(true,true,'FORMS');
+        $options  = array();
+        foreach($elements as $e)
+            $options[$e['name']] = $e['label'];
+
+        $this->form->setForm('add_element');
+        $this->form->set('add_buttons',false);
+        $this->form->getElement('after')->setAttr('options',$options);
+        $this->form->getElement('preset_id')->setValue($data['preset_id']);
+
+        $_tpl_data['add_form'] = $this->form->getForm('add_element');
+
+        $this->form->setForm('edit_element');
+        $this->form->set('add_buttons',false);
+        $this->form->setAttr('form_width','100%');
+        $_tpl_data['edit_form'] = $this->form->getForm();
+
     }   // end function editform()
 
     /**
@@ -388,13 +431,13 @@ class blackForms {
     /**
      * show preview of the form
      **/
-    private function preview()
+    private function preview($return_config=false)
     {
         // make sure we already have a form here
         global $_tpl_data, $section_id, $page_id;
         $r = $this->bcf_dbh->search(
             array(
-                'fields' => array('preset_name','preset_data','config'),
+                'fields' => array('preset_id','preset_name','preset_data','config'),
                 'tables' => array(
                     'mod_blackforms_forms',
                     'mod_blackforms_presets',
@@ -404,19 +447,26 @@ class blackForms {
                 'params' => $section_id
             )
         );
+
         if(!count($r))
             return select_preset();
 
         $config = ($r[0]['config'] != '') // modified
-                ? $r[0]['config']    // original preset
-                : $r[0]['preset_data']
+                ?  $r[0]['config']    // original preset
+                :  $r[0]['preset_data']
                 ;
 
         $this->form->configure($r[0]['preset_name'],unserialize($config));
         $this->form->setForm($r[0]['preset_name']);
 
-        $_tpl_data['form'] = $this->form->getForm();
-        $_tpl_data['info'] = $this->form->t('This is a preview of your form. The presentation in the frontend may differ.');
+        $_tpl_data['form'] = '<h1>'.$this->form->t('Preview').'</h1>'
+                           . '<div class="bform_info">'.$this->form->t('This is a preview of your form. The presentation in the frontend may differ.').'</div>'
+                           . $this->form->getForm();
+
+        if($return_config)
+            return $r[0];
+        else
+            return true;
     }   // end function editform()
 
     /**
@@ -525,10 +575,12 @@ class blackForms {
                     'params' => $_GET['view']
                 )
             );
-            $_tpl_data['allow_reply'] = true;
+            $allow_reply = true;
+            if($this->get_settings('mail_from')=='')
+                $allow_reply = false;
             if(count($rep))
             {
-                $_tpl_data['allow_reply'] = false;
+                $allow_reply = false;
                 $this->form->setForm('reply');
                 $fields = $this->form->getElements(1,1);
                 $map    = array();
@@ -555,9 +607,8 @@ class blackForms {
                     $replies[] = $rep_data;
                 }
             }
-
             $_tpl_data['content']
-                = $parser->get('be_view',array('entry'=>$r[0],'data'=>$data,'hide_buttons'=>$hide_buttons,'replies'=>$replies));
+                = $parser->get('be_view',array('entry'=>$r[0],'data'=>$data,'hide_buttons'=>$hide_buttons,'replies'=>$replies,'allow_reply'=>$allow_reply));
         }
     }   // end function entry_details()
     
@@ -587,7 +638,7 @@ class blackForms {
         if($this->form->isSent() && $this->form->isValid())
         {
             $user_id = CAT_Users::get_user_id();
-            $data    = $this->form->getData();
+            $data    = $this->form->getData(1);
             foreach(array('do','reply','page_id') as $f)
                 unset($data[$f]);
             $this->bcf_dbh->insert(
@@ -608,7 +659,8 @@ class blackForms {
 				{
                     try {
                         $mailer->sendMail( $data['mail_from'], $data['mail_to'], $data['mail_subject'], $data['mail_body'], $data['mail_from_name'] );
-                        $this->form->setInfo($this->form->t('Your reply was sent.'));
+                        $_tpl_data['info'] = $this->form->t('Your reply was sent.');
+                        return $this->entry_details();
                     }
                     catch( Exception $e ) {
                         $this->form->setError($this->form->t('Unable to send the mail!'));
@@ -656,8 +708,27 @@ class blackForms {
             }
         }
 
-        $files  = CAT_Helper_Directory::getInstance()->setSuffixFilter(array('csv'))
+        // delete single file; this is always an AJAX call!
+        if(isset($_REQUEST['del']))
+        {
+            $success = false;
+            if(file_exists($path.'/'.$_REQUEST['del']))
+            {
+                unlink($path.'/'.$_REQUEST['del']);
+                $success = true;
+            }
+            $ajax	= array(
+        		'message'	=> 'done',
+        		'success'	=> $success
+        	);
+        	print json_encode( $ajax );
+        	exit();
+        }
+
+        $files  = CAT_Helper_Directory::getInstance()
+                  ->setSuffixFilter(array('csv'))
                   ->findFiles('.*\.csv',$path,true);
+
         if(count($files))
         {
             foreach($files as $file)
@@ -740,7 +811,9 @@ class blackForms {
                    ( isset($_POST['toggle_boxes']) && $_POST['toggle_boxes'] == 'on' )
                 || ( isset($_POST['items']) && in_array($r[$i]['submission_id'],$_POST['items']) )
             ) {
-                $csv[] = CAT_Helper_CSV::arrayToCsv(unserialize($r[$i]['data_serialized']));
+                $tmp = unserialize($r[$i]['data_serialized']);
+                if(is_array($tmp))
+                    $csv[] = CAT_Helper_CSV::arrayToCsv($tmp);
             }
         }
         // add header line
@@ -801,6 +874,10 @@ class blackForms {
         global $section_id;
         $r = $this->bcf_dbh->search(
             array(
+                'fields' => array(
+                    't1.*',
+                    '(SELECT COUNT(*) FROM cat_mod_blackforms_replies AS t2 WHERE t2.submission_id = t1.submission_id ) AS replies'
+                ),
                 'tables' => 'mod_blackforms_submissions',
                 'where'  => 'section_id == ?',
                 'params' => $section_id
@@ -851,6 +928,12 @@ class blackForms {
             $config = unserialize($config);
             $this->form->configure($r['preset'],$config);
             $this->form->setForm($r['preset']);
+            // enable ASP?
+            if($this->get_settings('protection') == 'honeypot')
+            {
+                $this->form->set('honeypot_prefix','bcf_hp_');
+                $this->form->createHoneypots(2);
+            }
             return $config;
         }
         return array();

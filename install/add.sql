@@ -1,6 +1,6 @@
 INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (__SECTION__, 'success_page', '0');
 INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (__SECTION__, 'ui_theme', 'sunny');
-INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (__SECTION__, 'captcha', 'n');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (__SECTION__, 'protection', 'honeypot');
 INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (__SECTION__, 'attachment_maxsize', '1024');
 INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (__SECTION__, 'attachments', 'n');
 INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (__SECTION__, 'attachment_types', 'jpg,jpeg,gif,gz,png,pdf,tif,zip');
@@ -14,4 +14,4 @@ INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_
 INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (__SECTION__, 'success_mail_from', '');
 INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (__SECTION__, 'success_mail_from_name', '');
 INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (__SECTION__, 'success_mail_body', '');
-INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (__SECTION__, 'success_page', '');
+INSERT INTO `cat_mod_blackforms_settings` (`section_id`, `option_name`, `option_value`) VALUES (__SECTION__, 'success_page', '0');

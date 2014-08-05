@@ -61,3 +61,8 @@ $mod_headers = array(
         ),
     ),
 );
+
+if(isset($_GET['do']) && $_GET['do'] == 'form')
+{
+    $mod_headers['backend']['js'][] = '/modules/blackForms/js/editform.js';
+}

@@ -1,4 +1,5 @@
-#mod_blackforms .bform_info{border:1px solid #006600;color:#006600;background-color:#ccffcc;padding:5px;text-align:center;width:99%;margin:auto;-webkit-border-radius: 8px;-moz-border-radius: 8px;-khtml-border-radius: 8px;border-radius: 8px;-moz-box-shadow: 5px 5px 5px #d4d4d4;-webkit-box-shadow: 5px 5px 5px #d4d4d4;box-shadow: 5px 5px 5px #d4d4d4;}
+#mod_blackforms .bform_info{text-align:center;width:99%;}
+#mod_blackforms .align_right{text-align:right;}
 #mod_blackforms .bform_success{border:1px solid #006600;color:#006600;background-color:#ccffcc;}
 #mod_blackforms .bform_error{border:1px solid #CC0000;color:#cc0000;background-color:#FFCCFF;}
 #mod_blackforms label.bform_error{margin-left:279px;border:0;min-width:528px;max-width:528px;display:inline-block;}

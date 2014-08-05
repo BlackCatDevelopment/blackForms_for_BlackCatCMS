@@ -1,2 +1,3 @@
 @import url(common.css);
 @import url(formfix.css);
+div.bform_content{margin-top:15px;text-align:center;}

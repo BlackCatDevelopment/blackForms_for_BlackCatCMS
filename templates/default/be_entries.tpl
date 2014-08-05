@@ -6,7 +6,8 @@
                 <th class="gradient1">
                     <input type="checkbox" name="toggle_boxes" id="toggle_boxes" />
                 </th>
-                <th class="gradient1">&nbsp;</th>
+                <th class="gradient1">{translate('Details')}</th>
+                <th class="gradient1">{translate('Responded')}</th>
                 <th class="gradient1">{translate('Submission ID')}</th>
                 <th class="gradient1">{translate('Submission Date')}</th>
                 <th class="gradient1">{translate('Submitted by')}</th>
@@ -23,6 +24,7 @@
                 <td>
                     <a href="{$url}&amp;do=entries&amp;view={$entry.submission_id}" class="icon icon-eye" title="{translate('View entry details')}">&nbsp;</a>
                 </td>
+                <td>{if $entry.replies}<span class="icon icon-checkmark" style="color:green"></span>{/if}</td>
                 <td>{$entry.submission_id}</td>
                 <td>{format_date($entry.submitted_when)}</td>
                 <td>{$entry.submitted_by}</td>

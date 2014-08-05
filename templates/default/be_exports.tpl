@@ -19,10 +19,12 @@
                 <td>
                     <input type="checkbox" class="delete" name="delete[]" id="export_{$entry.filename}" value="{$entry.filename}" />
                 </td>
-                <td>{$entry.filename}</td>
+                <td>
+                    <a href="{$CAT_URL}/modules/blackForms/export/{$entry.filename}">{$entry.filename}</a>
+                </td>
                 <td>{format_date($entry.date)}</td>
                 <td>{$entry.size}</td>
-                <td><a href="javascript:confirm_link(cattranslate('Are you sure?'),'{$url}&amp;do=exports&amp;del={$entry.filename}');" class="icon icon-remove">&nbsp;</a></td>
+                <td><a href="javascript:confirm_link(cattranslate('Are you sure?','','','blackForms'),'{$url}&amp;do=exports&amp;del={$entry.filename}');" class="icon icon-remove">&nbsp;</a></td>
             </tr>
 {/foreach}
             <tr>
@@ -34,7 +36,8 @@
     </table>
 </form>
 {else}
-<div class="bform_info">
+<div class="bform_info align_right">
+<span class="icon icon-info">&nbsp;</span>
 {translate('No exports found')}
 </div>
 {/if}

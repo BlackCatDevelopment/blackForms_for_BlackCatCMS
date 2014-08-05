@@ -2,6 +2,11 @@
  &laquo; {translate('Back')}
 </button>
 
+{if $info}
+<div class="bcf_info">
+{$info}
+</div>
+{/if}
 <table>
     <thead>
         <tr><th colspan="2" class="gradient1">{translate('Submission details')}</th></tr>
@@ -38,7 +43,6 @@
 {/if}
     </tbody>
 </table>
-
 {if !$hide_buttons}
 <button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary" name="back" onclick="window.location='{$url}&amp;do=entries';return true;">
  &laquo; {translate('Back')}
