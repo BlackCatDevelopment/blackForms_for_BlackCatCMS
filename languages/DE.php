@@ -55,6 +55,9 @@ $LANG = array_merge(
     $LANG2,
     array(
         'Are you sure?' => 'Sind Sie sicher?',
+        'Are you sure that you really want to delete this field?' => 'Soll dieses Formularfeld wirklich gelöscht werden?',
+        'Are you sure that you really want to DELETE this form?' => 'Soll dieses Formular wirklich KOMPLETT GELÖSCHT werden?',
+        'Are you sure that you really want to reset this form?' => 'Soll dieses Formular wirklich auf die Vorlage zurückgesetzt werden?',
         'Date' => 'Datum',
         'Delete selected' => 'Ausgewählte löschen',
         'Entries' => 'Einträge',
@@ -62,6 +65,7 @@ $LANG = array_merge(
         'Exports' => 'Exporte',
         'Filename' => 'Dateiname',
         'Form' => 'Formular',
+        'Insert a name' => 'Bitte einen Namen eingeben',
         'Item properties' => 'Elementeigenschaften',
         'No exports found' => 'Keine Exporte gefunden',
         'Options (&lt;ID&gt;:&lt;Value&gt;)' => 'Optionen (&lt;ID&gt;:&lt;Wert&gt;)',

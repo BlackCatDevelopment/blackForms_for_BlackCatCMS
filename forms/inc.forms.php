@@ -122,9 +122,39 @@ $FORMS = array(
 
     'reset_form'  => array(
         array(
+            'type'     => 'hidden',
+            'name'     => 'preset_id',
+            'value'    => '0',
+        ),
+        array(
+            'type'     => 'hidden',
+            'name'     => 'page_id',
+            'value'    => '0',
+        ),
+        array(
+            'type'     => 'hidden',
+            'name'     => 'section_id',
+            'value'    => '0',
+        ),
+        array(
+            'type'     => 'hidden',
+            'name'     => 'do',
+            'value'    => 'form',
+        ),
+        array(
             'type'     => 'submit',
-            'name'     => 'reset',
+            'id'       => 'save_as_preset',
+            'label'    => 'Save as new preset'
+        ),
+        array(
+            'type'     => 'submit',
+            'name'     => 'reset_to_preset',
             'label'    => 'Reset to preset'
+        ),
+        array(
+            'type'     => 'submit',
+            'name'     => 'complete_reset',
+            'label'    => 'Completely reset'
         ),
     ),
 
@@ -152,7 +182,11 @@ $FORMS = array(
                 'checkboxgroup' => 'Checkboxgroup',
                 'legend'        => 'Legend',
                 'info'          => 'Infotext',
+                'countryselect' => 'Country select',
+                'imageselect'   => 'Image select',
+                'hidden'        => 'Hidden field',
             ),
+            'class'    => 'uidisabled',
         ),
         array(
             'type'     => 'text',
@@ -162,10 +196,23 @@ $FORMS = array(
             'required' => true,
         ),
         array(
+            'type'     => 'text',
+            'name'     => 'default_value',
+            'label'    => 'Default value',
+            'allow'    => 'text',
+        ),
+        array(
+            'type'     => 'textarea',
+            'name'     => 'options',
+            'label'    => 'Options (for select/radio/checkbox)',
+            'title'    => 'One option per line. Use <value>|<label> to have labeled options.',
+        ),
+        array(
             'type'     => 'radiogroup',
             'name'     => 'required',
             'label'    => 'Required',
             'options'  => array('Y'=>'Yes','N'=>'No'),
+            'checked'  => 'N',
         ),
         array(
             'type'     => 'select',
@@ -177,12 +224,14 @@ $FORMS = array(
                 'after'  => 'after...',
             ),
             'selected' => 'after',
+            'class'    => 'uidisabled',
         ),
         array(
             'type'     => 'select',
             'name'     => 'after',
             'label'    => 'Field',
             'options'  => array(),
+            'class'    => 'uidisabled',
         ),
     ),
 
@@ -201,7 +250,7 @@ $FORMS = array(
         ),
         array(
             'type'     => 'info',
-            'label'    => 'Please note: You cannot edit the field name because it makes old form submissions invalid',
+            'label'    => 'Please note: You cannot edit the field name as it makes no sense.',
         ),
         array(
             'type'     => 'text',
@@ -211,10 +260,39 @@ $FORMS = array(
             'required' => true,
         ),
         array(
+            'type'     => 'text',
+            'name'     => 'default_value',
+            'label'    => 'Default value',
+            'allow'    => 'text',
+        ),
+        array(
+            'type'     => 'textarea',
+            'name'     => 'options',
+            'label'    => 'Options (for select/radio/checkbox)',
+            'title'    => 'One option per line. Use <value>|<label> to have labeled options.',
+        ),
+        array(
             'type'     => 'radiogroup',
             'name'     => 'required',
             'label'    => 'Required',
             'options'  => array('Y'=>'Yes','N'=>'No'),
+        ),
+    ),
+
+    'reset_settings' => array(
+        array(
+            'type'     => 'hidden',
+            'name'     => 'do',
+            'value'    => 'options',
+        ),
+        array(
+            'type'     => 'hidden',
+            'name'     => 'page_id',
+        ),
+        array(
+            'type'     => 'submit',
+            'name'     => 'reset_to_defaults',
+            'label'    => 'Reset to defaults'
         ),
     ),
 
@@ -291,7 +369,8 @@ $FORMS = array(
                 'ui-darkness',
                 'ui-lightness',
                 'vader',
-            )
+            ),
+            'title' => 'For Mojito frontend template, you may try [base], [start] or [redmond], for example',
         ),
 
         array(
@@ -311,24 +390,28 @@ $FORMS = array(
             'name'     => 'mail_to',
             'label'    => 'Mail to address',
             'allow'    => 'email',
+            'title'    => 'Address to use for new submission info mail. Leave blank to use the global (CMS) address.',
         ),
         array(
             'type'     => 'text',
             'name'     => 'mail_from',
             'label'    => 'Mail from address',
             'allow'    => 'email',
+            'title'    => 'Address to use as sender address. Leave blank to use the global (CMS) address.',
         ),
         array(
             'type'     => 'text',
             'name'     => 'mail_from_name',
             'label'    => 'Mail from name',
             'allow'    => 'string',
+            'title'    => 'Realname to use for sender.',
         ),
         array(
             'type'     => 'text',
             'name'     => 'mail_subject',
             'label'    => 'Mail subject',
             'allow'    => 'string',
+            'title'    => 'Subject line to use for the new submission info mail.',
         ),
 
         array(
@@ -378,11 +461,13 @@ $FORMS = array(
             'name'     => 'success_message',
             'label'    => 'Success message',
             'allow'    => 'plain',
+            'title'    => 'You may use any form field as part of the success message. Use {$<Fieldname>} as placeholder. To see a list of available field names, open [Mail to address field] dropdown.',
         ),
         array(
             'type'     => 'select',
             'name'     => 'success_page',
             'label'    => 'Show page after finish',
+            'title'    => 'If you choose a success page, the success message above will be ignored.',
             'options'  => array(),
         ),
     ),

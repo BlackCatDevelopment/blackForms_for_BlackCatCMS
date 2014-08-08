@@ -55,7 +55,7 @@ $db = \wblib\wbQuery::getInstance(
     )
 );
 
-$import = file_get_contents( dirname(__FILE__)."/install/add.sql" );
+$import = file_get_contents( dirname(__FILE__)."/install/defaults.sql" );
 _ar_import($import);
 
 function _ar_import($import) {

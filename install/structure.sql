@@ -23,9 +23,10 @@ CREATE TABLE IF NOT EXISTS `cat_mod_blackforms_replies` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `cat_mod_blackforms_settings` (
-  `section_id` int(10) NOT NULL,
-  `option_name` varchar(50) NOT NULL,
-  `option_value` tinytext NOT NULL
+	`section_id` INT(10) NOT NULL,
+	`option_name` VARCHAR(50) NOT NULL,
+	`option_value` TINYTEXT NOT NULL,
+	UNIQUE INDEX `section_id_option_name` (`section_id`, `option_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `cat_mod_blackforms_submissions` (

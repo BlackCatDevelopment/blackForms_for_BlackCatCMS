@@ -46,6 +46,7 @@ if (defined('CAT_PATH')) {
 
 $LANG = array(
 // ----- globals -----
+    'Cancel' => 'Abbrechen',
     'This item is required' => 'Pflichtfeld',
     'Submit' => 'Absenden',
     'Success' => 'Erfolgreich',
@@ -55,10 +56,11 @@ $LANG = array(
     'No form configured yet' => 'Formular noch nicht konfiguriert',
     'Thank you for yoursubmission!' => 'Vielen Dank für Ihre Mitteilung!',
 // ----- preset/form page -----
+    'Completely reset' => 'Komplett zurücksetzen',
     'Edit form' => 'Formular anpassen',
     'Please choose a preset...' => 'Bitte wählen Sie eine Vorlage...',
     'Preset' => 'Vorlage',
-    'Reset to Preset' => 'Auf Vorlage zurücksetzen',
+    'Reset to preset' => 'Auf Vorlage zurücksetzen',
 // ----- entries page -----
     'Export successful' => 'Export erfolgreich',
     'Guest (not logged in)' => 'Besucher (nicht angemeldet)',
@@ -73,14 +75,18 @@ $LANG = array(
     'Your reply was sent.' => 'Antwort wurde gesendet',
     'Unable to send the mail!' => 'Fehler beim Versand der Mail!',
 // ----- settings -----
+    'Address to use as sender address. Leave blank to use the global (CMS) address.' => 'Adresse für den Absender. Leer lassen, um die globale (CMS) Einstellung zu verwenden.',
+    'Address to use for new submission info mail. Leave blank to use the global (CMS) address.' => 'Adresse für Infomail über neue Einträge. Leer lassen, um die globale (CMS) Einstellung zu verwenden.',
     'Allow attachments' => 'Anhänge erlauben',
     'Common settings' => 'Allgemeine Einstellungen',
     'Do you wish to allow to send (=upload) files? Please note: Attachments are potentially harmful and are uploaded to your server!' => 'Wollen Sie den Versand (=Upload) von Anhängen erlauben? Hinweis: Anhänge können schädlich sein und werden auf den Server hochgeladen!',
     'eMail Options' => 'eMail Optionen',
+    'For Mojito frontend template, you may try [base], [start] or [redmond], for example' => 'Für Mojito Frontend Template passen z.B. [base], [start] oder [redmond]',
     'How to protect your form. Honeypot (ASP) is non-obstrusive and a workable compromise, as many people feel bothered by Captchas.' => 'Bestimmt den Schutzmechanismus zum Schutz vor Spam. Honeypot ist ein guter Kompromiß. Captchas empfinden viele Besucher als störend.',
     'If enabled, a success email is sent to the form sender.' => 'Wenn aktiviert, wird dem Absender des Formulars eine Bestätigungsmail geschickt.',
     'If yes: Allowed file types (by suffix)' => 'Falls ja: Erlaubte Datei-Typen (nach Endung)',
     'If yes: Max. size for attachments' => 'Falls ja: Max. Größe für Anhänge',
+    'If you choose a success page, the success message above will be ignored.' => 'Wird eine Erfolgreich-Seite ausgewählt, wird der obige Erfolgreich Text ignoriert.',
     'Mail body' => 'eMail Text',
     'Mail from address' => 'Absender Mailadresse',
     'Mail from name' => 'Absender Name',
@@ -89,31 +95,43 @@ $LANG = array(
     'Mail to address field' => 'Eingabefeld mit Mailadresse',
     'no protection' => 'kein Schutz',
     'Protect form with' => 'Schütze Formular mit',
+    'Realname to use for sender.' => 'Realname des Absenders.',
+    'Reset to defaults' => 'Auf Standardwerte zurücksetzen',
     'Send eMail' => 'eMails verschicken',
     'Send new submissions as mail' => 'Über neue Einträge per Mail informieren',
     'Separate suffixes by comma (,)' => 'Endungen mit Komma (,) trennen',
     'Set the max. size for attachments in Bytes; please note that only digits are allowed' => 'Maximale Größe für Anhänge in Bytes; nur Ziffern sind erlaubt',
     'Show page after finish' => 'Bei Erfolg auf Seite weiterleiten',
+    'Subject line to use for the new submission info mail.' => 'Betreffzeile der Infomail über neue Einträge',
     'Success message' => 'Erfolgreich Text',
     'Success Options' => 'Erfolgreich Optionen',
     'This field is required because "allow attachments" is checked' => 'Dieses Feld ist ein Pflichtfeld, da "Anhänge erlauben" aktiviert ist',
     'This field is required because "send mail" is checked' => 'Dieses Feld ist ein Pflichtfeld, da "eMails verschicken" aktiviert ist',
     'UI Theme to use in frontend' => 'UI Theme für das Frontend',
     'WB style captcha' => 'WB Stil Captcha',
+    'You may reset the settings to default here.' => 'Die Einstellungen können hiermit auf Standardwerte zurückgesetzt werden.',
+    'You may use any form field as part of the success message. Use {$<Fieldname>} as placeholder. To see a list of available field names, open [Mail to address field] dropdown.'
+        => 'Alle Formularfelder können als Platzhalter in der Erfolgreich-Mitteilung verwendet werden. Hierzu {$<Fieldname>} als Platzhalter verwenden. Die Liste der Feldnamen ist über das [Eingabefeld mit Mailadresse] Dropdown zu finden.',
 // ----- preview -----
     'Preview' => 'Vorschau',
     'This is a preview of your form. The presentation in the frontend may differ.' => 'Dies ist eine Vorschau des Formulars. Die Darstellung im Frontend sieht möglicherweise anders aus.',
 // ----- add / edit element dialog -----
+    'Add field'   => 'Element hinzufügen',
+    'after...'    => 'hinter...',
+    'at bottom'   => 'am Ende',
+    'Country select' => 'Länderauswahl (Dropdown)',
+    'Edit field (one line)' => 'Eingabefeld (einzeilig)',
     'Element (field) name' => 'Element (Feld) Name',
     'Field'       => 'Feld',
+    'Hidden field' => 'Verstecktes Feld',
+    'Image select' => 'Bildauswahl (Dropdown)',
     'on top'      => 'am Anfang',
-    'at bottom'   => 'am Ende',
-    'after...'    => 'hinter...',
+    'Options (for select/radio/checkbox)' => 'Optionen (für Select/Radio/Checkbox)',
+    'Please note: You cannot edit the field name as it makes no sense.'
+        => 'Hinweis: Der Feldname kann nicht geändert werden, da das nicht sinnvoll ist.',
     'Required'    => 'Pflichtfeld',
-    'Edit field (one line)' => 'Eingabefeld (einzeilig)',
+    'Save as new preset' => 'Als neues Preset speichern',
     'Text field (multiline)' => 'Textfeld (mehrzeilig)',
-    'Please note: You cannot edit the field name because it makes old form submissions invalid'
-        => 'Hinweis: Der Feldname kann nicht geändert werden, da sonst bestehende Einträge ungültig werden',
 // ----- presets ------
     'Standard contact form with 4 fields'
         => 'Standard Kontaktformular mit 4 Feldern',

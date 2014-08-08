@@ -46,9 +46,9 @@ if (defined('CAT_PATH')) {
 
 header('Content-type: application/json');
 
-// ===============
-// ! check perms
-// ===============
+// *********************************************************************
+// check perms
+// *********************************************************************
 $users = CAT_Users::getInstance();
 if ( ! $users->checkPermission('pages', 'pages_modify', false) == true )
 {
@@ -60,9 +60,9 @@ if ( ! $users->checkPermission('pages', 'pages_modify', false) == true )
     exit();
 }
 
-// ===============
-// ! Get page id
-// ===============
+// *********************************************************************
+// Get page id
+// *********************************************************************
 $val = CAT_Helper_Validate::getInstance();
 $page_id = $val->get('_REQUEST', 'page_id', 'numeric');
 
@@ -76,7 +76,9 @@ if ($page_id=='')
     exit();
 }
 
+// *********************************************************************
 // wblib2 autoloader
+// *********************************************************************
 spl_autoload_register(function($class)
 {
     $file = str_replace('\\','/',CAT_PATH).'/modules/lib_wblib/'.str_replace(array('\\','_'), array('/','/'), $class).'.php';
@@ -86,21 +88,26 @@ spl_autoload_register(function($class)
     // next in stack
 });
 
+// *********************************************************************
+// load form data
+// *********************************************************************
 $id    = $val->get('_REQUEST','preset_id');
 $name  = $val->get('_REQUEST','name');
 
 if($val->get('_REQUEST','do') != 'remove')
 {
-    $type  = $val->get('_REQUEST','type');
-    $where = $val->get('_REQUEST','where');
-    $after = $val->get('_REQUEST','after');
-    $req   = $val->get('_REQUEST','required');
-    $label = $val->get('_REQUEST','label');
+    $type    = $val->get('_REQUEST','type','string');
+    $where   = $val->get('_REQUEST','where','string');
+    $after   = $val->get('_REQUEST','after','string');
+    $req     = $val->get('_REQUEST','required','string');
+    $label   = $val->get('_REQUEST','label','string');
+    $default = $val->get('_REQUEST','default_value','string');
+    $options = $val->get('_REQUEST','options','string');
 }
 
-//echo "TYPE [$type] WHERE [$where] AFTER [$after] REQ [$req] LABEL [$label]\n";
-
-// get current preset data
+// *********************************************************************
+// get database connection
+// *********************************************************************
 $db = \wblib\wbQuery::getInstance(
     array(
         'host'   => CAT_DB_HOST,
@@ -110,6 +117,10 @@ $db = \wblib\wbQuery::getInstance(
         'prefix' => CAT_TABLE_PREFIX,
     )
 );
+
+// *********************************************************************
+// get current preset data
+// *********************************************************************
 $r = $db->search(
     array(
         'fields' => array('preset_id','preset_name','preset_data','config'),
@@ -122,21 +133,43 @@ $r = $db->search(
         'params' => $id
     )
 );
+
 if(count($r))
 {
-    $config = ($r[0]['config'] != '') // modified
-            ?  $r[0]['config']    // original preset
-            :  $r[0]['preset_data']
+    $config = ($r[0]['config'] != '') 
+            ?  $r[0]['config']        // original preset
+            :  $r[0]['preset_data']   // modified form
             ;
     $data   = unserialize($config);
     $form   = \wblib\wbForms::getInstance();
     $form->configure($r[0]['preset_name'],$data);
     $form->setForm($r[0]['preset_name']);
 
+    // *********************************************************************
+    // remove an element
+    // *********************************************************************
     if($val->get('_REQUEST','do') == 'remove')
     {
         $form->removeElement($name,'FORMS');
     }
+    elseif($val->get('_REQUEST','action') == 'save_as_preset' && $val->get('_REQUEST','name'))
+    {
+        $new_config = serialize($form->getElements(false,false,'FORMS'));
+        $db->insert(
+            array(
+                'tables' => 'mod_blackforms_presets',
+                'fields' => array('preset_name','display_name','preset_data'),
+                'values' => array(
+                    $val->get('_REQUEST','name'),
+                    ( $val->get('_REQUEST','display_name') ? $val->get('_REQUEST','display_name') : $val->get('_REQUEST','name') ),
+                    $new_config
+                ),
+            )
+        );
+    }
+    // *********************************************************************
+    // edit element
+    // *********************************************************************
     else
     {
 
@@ -148,7 +181,34 @@ if(count($r))
         );
 
         if($type=='radiogroup' || $type=='select' || $type=='checkboxgroup')
-            $elem['options'] = array();
+        {
+            if($options)
+            {
+                $new_opt = array();
+                $lines   = explode("\n",$options);
+                if(!is_array($lines)) $lines = array($lines);
+                foreach($lines as $line)
+                {
+                    if(substr_count($line,"|"))
+                    {
+                        list($key,$value) = explode("|",$line,2);
+                        $new_opt[$key]=$value;
+                    }
+                    else
+                    {
+                        $new_opt[] = $line;
+                    }
+                }
+                $elem['options'] = $new_opt;
+            }
+            if($default)
+                $elem['selected'] = $default;
+        }
+        else
+        {
+            if($default)
+                $elem['value'] = $default;
+        }
 
         $after_elem = NULL;
 
@@ -166,8 +226,6 @@ if(count($r))
         }
         $form->addElement($elem,$after_elem,$pos,'FORMS');
     }
-
-//print_r($form->getElements(false,false,'FORMS'));
 
     $new_config = serialize($form->getElements(false,false,'FORMS'));
 

@@ -7,5 +7,6 @@ div#mod_blackforms tr, div#mod_blackforms th, div#mod_blackforms td{margin:0;pad
 div#mod_blackforms th{font-weight:900;background-color:#ccc;text-align:left;padding:5px;}
 div#mod_blackforms td{padding:0 5px;}
 div#mod_blackforms .icon{font-size:1.5em;}
-
 div#mod_blackforms .gradient_green{background:#007F00;color:#fff;font-weight:900;filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#007F00', endColorstr='#009933');background: -webkit-gradient(linear, left top, left bottom, from(#007F00), to(#009933));background: -moz-linear-gradient(top,  #007F00, #009933);}
+div#mod_blackforms div#tabs div.bform_info.right{display:inline-block;width:auto;}
+div#mod_blackforms div#tabs div.bform_info.right div.fbform{width:270px;}

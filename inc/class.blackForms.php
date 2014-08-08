@@ -91,8 +91,11 @@ class blackForms {
         $this->form->set('wblib_url',WBLIB_URL);
         $this->form->setAttr('action',$_SERVER['SCRIPT_NAME']);
 
+        // use locals instead of cdns
         \wblib\wbFormsJQuery::set('core_cdn',CAT_URL.'/modules/lib_jquery/jquery-core/jquery-core.min.js');
         \wblib\wbFormsJQuery::set('ui_cdn',CAT_URL.'/modules/lib_jquery/jquery-ui/ui/jquery-ui.min.js');
+        \wblib\wbFormsJQuery::set('sel_css',CAT_URL.'/modules/lib_wblib/wblib/3rdparty/select2/select2.css');
+        \wblib\wbFormsJQuery::set('sel_cdn',CAT_URL.'/modules/lib_wblib/wblib/3rdparty/select2/select2.min.js');
     }   // end function __construct()
 
     /**
@@ -104,8 +107,8 @@ class blackForms {
     {
         global $_tpl_data;
 
-        // always use UITheme "start" in BE
-        \wblib\wbFormsJQuery::set('ui_theme','start');
+        // always use UITheme "base" in BE (available in BC)
+        \wblib\wbFormsJQuery::set('ui_theme','base');
 
         $this->count_exports();
 
@@ -161,7 +164,10 @@ class blackForms {
     {
         global $_tpl_data, $parser, $section_id;
 
-        \wblib\wbFormsJQuery::set('ui_theme',$this->get_settings('ui_theme','start'));
+        $theme = $this->get_settings('ui_theme','start');
+        if($theme == 'base' && file_exists(CAT_PATH.'/modules/lib_jquery/jquery-ui/themes/base/jquery-ui.css'))
+            \wblib\wbFormsJQuery::set('ui_css', CAT_URL.'/modules/lib_jquery/jquery-ui/themes/%s/jquery-ui.css');
+        \wblib\wbFormsJQuery::set('ui_theme',$theme);
 
         $r = $this->load_form();
         if(!count($r))
@@ -183,11 +189,57 @@ class blackForms {
                 );
                 if($this->bcf_dbh->isError())
                 {
-                    $this->form->setInfo($this->form->t('Sorry, but we are unable to save your submission!').' '.$this->bcf_dbh->getError());
+                    $this->form->setInfo(
+                        $this->form->t(
+                             'Sorry, but we are unable to save your submission!'
+                        )
+                        .' '.$this->bcf_dbh->getError()
+                    );
                 }
                 else
                 {
                     $settings = $this->get_settings();
+                    $mailer   = NULL;
+                    $_GET['view'] = $this->bcf_dbh->lastInsertId();
+                    self::entry_details(true); // sets $_tpl_data['content']
+                    $data     = $this->form->getData();
+                    $elements = $this->form->getElements(true,true,'FORMS');
+                    $replace  = array();
+                    foreach($elements as $e)
+                        $replace[$e['name']] = ( isset($data[$e['name']]) ? $data[$e['name']] : '' );
+                    $localparser = new Dwoo(CAT_PATH.'/temp/cache', CAT_PATH.'/temp/compiled');
+
+                    // Send mail to admin
+                    if(isset($settings['send_mail']) && strtolower($settings['send_mail']) == 'y')
+                    {
+                        $mailer = CAT_Helper_Mail::getInstance();
+                        //$fromaddress, $toaddress, $subject, $message, $fromname=''
+                        $mailer->sendMail(
+                            ( isset($settings['mail_from'])      ? $settings['mail_from']      : SERVER_EMAIL ),
+                            ( isset($settings['mail_to'])        ? $settings['mail_to']        : SERVER_EMAIL ),
+                            ( isset($settings['mail_subject'])   ? $settings['mail_subject']   : $this->form->t('blackForms form submission completed') ),
+                            $_tpl_data['content'],
+                            ( isset($settings['mail_from_name']) ? $settings['mail_from_name'] : NULL )
+                        );
+                    }
+                    // send mail to guest
+                    if(isset($settings['success_send_mail']) && strtolower($settings['success_send_mail']) == 'y' && isset($data[$settings['success_mail_to_field']]) )
+                    {
+                        if(!$mailer)
+                            $mailer = CAT_Helper_Mail::getInstance();
+                        $mailtext
+                            = $localparser->get(
+                                  new Dwoo_Template_String($settings['success_mail_body']),
+                                  $replace
+                              );
+                        $mailer->sendMail(
+                            ( isset($settings['success_mail_from'])      ? $settings['success_mail_from']    : SERVER_EMAIL ),
+                            $data[$settings['success_mail_to_field']],
+                            ( isset($settings['success_mail_subject'])   ? $settings['success_mail_subject'] : $this->form->t('blackForms form submission completed') ),
+                            $mailtext,
+                            ( isset($settings['success_mail_from_name']) ? $settings['mail_from_name']       : NULL )
+                        );
+                    }
                     if(isset($settings['success_page']) && $settings['success_page'] !== '' && $settings['success_page'] !== '0')
                     {
                         echo "<script type='text/javascript'>location.href='".CAT_Helper_Page::getLink($settings['success_page'])."';</script>";
@@ -195,7 +247,14 @@ class blackForms {
                     else
                     {
                         $_tpl_data['info'] = $this->form->t('Form submission succeeded');
-                        $_tpl_data['content'] = $this->form->t($settings['success_message']);
+                        if(isset($settings['success_message']) && $settings['success_message']!='' )
+                        {
+                            $_tpl_data['content']
+                                = $localparser->get(
+                                      new Dwoo_Template_String($settings['success_message']),
+                                      $replace
+                                  );
+                        }
                     }
                 }
             }
@@ -215,11 +274,12 @@ class blackForms {
      * @access public
      * @return array
      **/
-    private function get_settings($key=NULL,$default=NULL)
+    private function get_settings($key=NULL,$default=NULL,$reload=false)
     {
         global $section_id;
-        if(!count($this->settings))
+        if(!count($this->settings)||$reload)
         {
+            $this->settings = array();
             $set = $this->bcf_dbh->search(
                 array(
                     'tables' => 'mod_blackforms_settings',
@@ -246,6 +306,17 @@ class blackForms {
     {
     	global $_tpl_data, $page_id, $section_id;
 
+        if(CAT_Helper_Validate::get('_REQUEST','reset_to_defaults'))
+        {
+            $import = file_get_contents( dirname(__FILE__)."/../install/defaults.sql" );
+            $sql    = str_replace(
+                array('__SECTION__','INSERT INTO'),
+                array($section_id,'REPLACE INTO'),
+                $import
+            );
+            $this->bcf_dbh->sqlImport($sql,'cat_',CAT_TABLE_PREFIX);
+        }
+
         // field selection for mail_to field
         $this->load_form();
         $fields = $this->form->getElements(1,1,'FORMS');
@@ -257,34 +328,18 @@ class blackForms {
         // add option 'none' to page select
         $page_select[0] = $this->form->t('[please choose one...]');
 
-        // create form and set default values
+        // set current values
+        $current = $this->get_settings();
+
+        // create settings form and set default values
         $this->form->setForm('settings');
         $this->form->setAttr('action',$_SERVER['SCRIPT_NAME']);
         $this->form->getElement('page_id')->setAttr('value',$page_id);
-        $this->form->getElement('success_page')->setAttr('options',$page_select);
-        $this->form->getElement('success_page')->setAttr('index_as_value',true);
-        $this->form->getElement('success_mail_to_field')->setAttr('options',$fsel);
-
-        // check if SecurImage is present
-        if(CAT_Helper_Addons::isModuleInstalled('lib_securimage'))
-        {
-            $this->form->getElement('protection')->addOption('bc_captcha','SecurImage Captcha');
-        }
-
-        // set current values
-        $current = $this->get_settings();
-        foreach($current as $key => $value)
-        {
-            $elem = $this->form->getElement($key);
-            if(is_object($elem))
-                $elem->setValue($value);
-        }
-
-        $_tpl_data['current_tab'] = 'options';
 
         // if the form is sent...
         if($this->form->isSent() && $this->form->isValid())
         {
+            $skip    = array('do','page_id','action');
             // ...get data
             $options = $this->form->getData();
             $errors  = array();
@@ -299,6 +354,7 @@ class blackForms {
             // save new settings
             foreach($options as $key => $value)
             {
+                if(in_array($key,$skip)) continue;
                 if(!array_key_exists($key,$current))
                 {
                     $this->bcf_dbh->insert(
@@ -319,19 +375,45 @@ class blackForms {
                 }
                 if($this->bcf_dbh->isError())
                     $errors[] = $this->bcf_dbh->getError();
-                else
-                    $current[$key] = $value;
             }
+
             if(!count($errors))
                 $this->form->setInfo('Success');
             else
-                $this->form->setError('Kaputt');
+                $this->form->setError('Error saving settings');
+
+            $current = array();
+            $current = $this->get_settings(NULL,NULL,true);
         }
+
+        $this->form->getElement('success_page')->setAttr('options',$page_select);
+        $this->form->getElement('success_page')->setAttr('index_as_value',true);
+        $this->form->getElement('success_mail_to_field')->setAttr('options',$fsel);
+
+        // check if SecurImage is present
+        if(CAT_Helper_Addons::isModuleInstalled('lib_securimage'))
+        {
+            $this->form->getElement('protection')->addOption('bc_captcha','SecurImage Captcha');
+        }
+
+        foreach($current as $key => $value)
+        {
+            $elem = $this->form->getElement($key);
+            if(is_object($elem))
+                $elem->setValue($value);
+        }
+
+        $_tpl_data['current_tab'] = 'options';
 
         $this->form->setData($current);
         $this->form->getElement('success_page')->setValue($current['success_page']);
 
         $_tpl_data['form'] = $this->form->getForm();
+
+        $this->form->setForm('reset_settings');
+        $this->form->getElement('page_id')->setAttr('value',$page_id);
+        $_tpl_data['info'] = $this->form->t('You may reset the settings to default here.')
+                           . $this->form->getForm();
 
     }   // function options()
 
@@ -347,7 +429,56 @@ class blackForms {
         if(!$this->hasform())
             return $this->select_preset();
 
+        // *********************************************************************
+        // reset form
+        // *********************************************************************
+        if(
+               CAT_Helper_Validate::get('_REQUEST','action') == 'reset_to_preset'
+            || CAT_Helper_Validate::get('_REQUEST','action') == 'complete_reset'
+        ) {
+            $section_id = CAT_Helper_Validate::get('_REQUEST','section_id');
+            $preset_id  = CAT_Helper_Validate::get('_REQUEST','preset_id');
+
+            if(CAT_Helper_Validate::get('_REQUEST','action') == 'complete_reset')
+            {
+                $this->bcf_dbh->delete(
+                    array(
+                        'tables' => 'mod_blackforms_forms',
+                        'where'  => 'section_id == ?',
+                        'params' => array($section_id),
+                    )
+                );
+            }
+            else
+            {
+                // get preset
+                $config = $this->bcf_dbh->search(
+                    array(
+                        'tables' => 'mod_blackforms_presets',
+                        'where'  => 'preset_id == ?',
+                        'params' => array($preset_id),
+                    )
+                );
+                $this->bcf_dbh->update(
+                    array(
+                        'tables' => 'mod_blackforms_forms',
+                        'fields' => array('config','is_changed'),
+                        'values' => array($config[0]['preset_data'],'N'),
+                        'where'  => 'section_id == ?',
+                        'params' => array($section_id),
+                    )
+                );
+            }
+            if(!$this->bcf_dbh->isError())
+            {
+                unset($_REQUEST['action']);
+                header('Location: '.$_SERVER['SCRIPT_NAME'].'?page_id='.$page_id.'&do=form');
+            }
+        }
+
+        // *********************************************************************
         // load preview
+        // *********************************************************************
         $data   = $this->preview(true);
         $config = ($data['config'] != '') // modified
                 ?  $data['config']    // original preset
@@ -356,6 +487,10 @@ class blackForms {
         $config = unserialize($config);
 
         $this->form->setForm('reset_form');
+        $this->form->setAttr('action',CAT_ADMIN_URL.'/pages/modify.php');
+        $this->form->getElement('preset_id')->setValue($data['preset_id']);
+        $this->form->getElement('section_id')->setValue($section_id);
+        $this->form->getElement('page_id')->setValue($page_id);
         $_tpl_data['info']
             = 'Verwendete Vorlage: '
             . $data['preset_name']
@@ -408,7 +543,10 @@ class blackForms {
                 )
             );
             if(!$this->bcf_dbh->isError())
+            {
+                $_REQUEST['do'] = 'options';
                 return $this->options();
+            }
         }
 
         $presets = $this->bcf_dbh->search(
@@ -416,12 +554,12 @@ class blackForms {
                 'tables' => 'mod_blackforms_presets',
             )
         );
-        $presets_select = array();
 
+        $presets_select = array();
         for($i=0;$i<count($presets);$i++)
-        {
             $presets_select[$presets[$i]['preset_id']] = $this->form->t($presets[$i]['display_name']);
-        }
+
+\wblib\wbFormsJQuery::set('enabled',false);
         // show presets
         $this->form->getElement('page_id')->setAttr('value',$page_id);
         $this->form->getElement('preset')->setAttr('options',$presets_select);
@@ -437,7 +575,7 @@ class blackForms {
         global $_tpl_data, $section_id, $page_id;
         $r = $this->bcf_dbh->search(
             array(
-                'fields' => array('preset_id','preset_name','preset_data','config'),
+                'fields' => array('preset_id','section_id','preset_name','preset_data','config'),
                 'tables' => array(
                     'mod_blackforms_forms',
                     'mod_blackforms_presets',
@@ -455,6 +593,8 @@ class blackForms {
                 ?  $r[0]['config']    // original preset
                 :  $r[0]['preset_data']
                 ;
+
+\wblib\wbFormsJQuery::set('enabled',false);
 
         $this->form->configure($r[0]['preset_name'],unserialize($config));
         $this->form->setForm($r[0]['preset_name']);
