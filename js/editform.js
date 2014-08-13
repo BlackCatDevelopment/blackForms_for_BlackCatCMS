@@ -57,14 +57,14 @@ if(typeof jQuery != 'undefined')
 
     }
 
-    function bF_save()
+    function bF_save(form_id)
     {
         var page_id = $('div#fc_add_module').find('input[name="page_id"]').val();
         var req     = 'N';
         if(typeof $("#required_Y:checked").val() != 'undefined') {
             req = 'Y';
         }
-        var formdata = $("#add_element").serialize();
+        var formdata = $("#"+form_id).serialize();
         formdata = formdata + "&required=" + req;
         formdata = formdata + "&page_id=" + page_id;
         formdata = formdata + "&_cat_ajax=1";
@@ -126,9 +126,18 @@ if(typeof jQuery != 'undefined')
             $('button#save_as_preset').removeClass('ui-state-default').addClass('fc_gradient_blue');
             $('fieldset.ui-widget.ui-widget-content.ui-corner-all.ui-helper-clearfix').addClass('sortable');
             $('fieldset.ui-widget.ui-widget-content.ui-corner-all.ui-helper-clearfix button').attr("disabled","disabled");
-            $('div#mod_blackforms fieldset.ui-widget.ui-widget-content.ui-corner-all.ui-helper-clearfix label,div#mod_blackforms fieldset.ui-widget.ui-widget-content.ui-corner-all.ui-helper-clearfix div.radiogroup, div#mod_blackforms fieldset.ui-widget.ui-widget-content.ui-corner-all.ui-helper-clearfix div.checkboxgroup').each( function() {
-                $(this).add($(this).nextUntil('label,button')).wrapAll('<div class="line"></div>');
+
+            // add buttons
+            $(
+                'div#mod_blackforms fieldset.ui-widget.ui-widget-content.ui-corner-all.ui-helper-clearfix label,' +
+                'div#mod_blackforms fieldset.ui-widget.ui-widget-content.ui-corner-all.ui-helper-clearfix div.radiogroup'
+            )
+                .not('div.radiogroup > label')
+                .not('div.checkboxgroup > label')
+                .each( function() {
+                $(this).add($(this).nextUntil('label,button,div')).wrapAll('<div class="line"></div>');
             });
+            $('div.radiogroup,div.checkboxgroup').css('display','inline-block');
             $('div.line').find('br').remove();
             $('div.line').append('<button class="right fc_gradient_blue fc_br_all icon icon-plus"></button>');
             $('div.line').append('<button class="right fc_gradient_red fc_br_all icon icon-minus"></button>');
@@ -155,7 +164,7 @@ if(typeof jQuery != 'undefined')
                         text:  cattranslate('Save'),
                         click: function()
                         {
-                            bF_save();
+                            bF_save($(this).find('form').prop('id'));
                             //dialog.find('form').get(0).reset();
                         },
                         icons: {
@@ -164,7 +173,7 @@ if(typeof jQuery != 'undefined')
                     }
                 ]
             };
-            var dialog = $('#dialog1').dialog(dialog_settings);
+            var dialog  = $('#dialog1').dialog(dialog_settings);
             var dialog2 = $('#dialog2').dialog(dialog_settings)
 
             /***********************************************************************
@@ -198,6 +207,7 @@ if(typeof jQuery != 'undefined')
                 e.preventDefault();
                 var field = $(this).parent().find('input,select,textarea').prop('id');
                 dialog2.find('input#name').val(field);
+                dialog2.find('input#display_name').val(field);
                 var text  = $(this).parent().find('.fblabel').text();
                 dialog2.find('input#label').val(text);
                 if( $(this).parent().find('select').length )
@@ -295,7 +305,43 @@ if(typeof jQuery != 'undefined')
                 placeholder: "ui-state-highlight",
                 forceHelperSize: true,
                 forcePlaceholderSize: true,
-                update: function( event, ui ) { ui.item.effect('highlight','slow'); }
+                update: function( event, ui )
+                {
+                    ui.item.effect('highlight','slow');
+                    var this_id = ui.item.find('input,textarea,select,radio,checkbox').attr('id');
+                    var prev_id = ui.item.prev().find('input,textarea,select,radio,checkbox').attr('id');
+                    var next_id = ui.item.next().find('input,textarea,select,radio,checkbox').attr('id');
+                    var page_id = $('div#fc_add_module').find('input[name="page_id"]').val();
+                    $.ajax(
+            		{
+            			type:		'POST',
+            			url:		CAT_URL + '/modules/blackForms/ajax/ajax_sort.php',
+            			dataType:	'json',
+            			data:		{
+                            id: this_id,
+                            prev: prev_id,
+                            next: next_id,
+                            page_id: page_id,
+                            preset_id: $('#preset_id').val()
+                        },
+            			cache:		false,
+            			beforeSend:	function( data )
+            			{
+            				data.process	= set_activity( 'Saving...' );
+            			},
+            			success:	function( data, textStatus, jqXHR  )
+            			{
+                            $('.popup').dialog('destroy').remove();
+                            if ( data.success === true )
+            				{
+            					location.reload(true);
+            				}
+            				else {
+            					return_error( jqXHR.process , data.message );
+            				}
+                        }
+                    });
+                }
             }).disableSelection();
         }
     });

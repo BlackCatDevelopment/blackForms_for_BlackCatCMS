@@ -514,6 +514,7 @@ class blackForms {
         $this->form->setForm('edit_element');
         $this->form->set('add_buttons',false);
         $this->form->setAttr('form_width','100%');
+        $this->form->getElement('preset_id')->setValue($data['preset_id']);
         $_tpl_data['edit_form'] = $this->form->getForm();
 
     }   // end function editform()
@@ -594,7 +595,7 @@ class blackForms {
                 :  $r[0]['preset_data']
                 ;
 
-\wblib\wbFormsJQuery::set('enabled',false);
+        \wblib\wbFormsJQuery::set('enabled',false);
 
         $this->form->configure($r[0]['preset_name'],unserialize($config));
         $this->form->setForm($r[0]['preset_name']);
@@ -691,6 +692,7 @@ class blackForms {
         {
             // load the form; allows to replace field names by labels
             $replies     = array();
+            $info        = '';
             $form        = $this->load_form();
             $data        = unserialize($r[0]['data_serialized']);
             $this->entry = $data;
@@ -716,18 +718,23 @@ class blackForms {
                 )
             );
             $allow_reply = true;
-            if($this->get_settings('mail_from')=='')
+            if($this->get_settings('mail_from')=='' && ( !defined('SERVER_EMAIL') || SERVER_EMAIL == '' ) )
+            {
                 $allow_reply = false;
+                $info        = $this->form->t('Please note: Replies are not possible as there is no "mail from" address configured in the settings and no CMS email address is set.');
+            }
             if(count($rep))
             {
                 $allow_reply = false;
+               
                 $this->form->setForm('reply');
-                $fields = $this->form->getElements(1,1);
+                $fields = $this->form->getElements(1,1,'FORMS');
                 $map    = array();
                 foreach($fields as $i => $f)
                 {
                     $map[$f['name']] = $this->form->t($f['label']);
                 }
+
                 foreach($rep as $reply)
                 {
                     $rep_data = unserialize($reply['data_serialized']);
@@ -748,7 +755,18 @@ class blackForms {
                 }
             }
             $_tpl_data['content']
-                = $parser->get('be_view',array('entry'=>$r[0],'data'=>$data,'hide_buttons'=>$hide_buttons,'replies'=>$replies,'allow_reply'=>$allow_reply));
+                = $parser->get(
+                      'be_view',
+                      array(
+                          'entry'        => $r[0],
+                          'data'         => $data,
+                          'hide_buttons' => $hide_buttons,
+                          'replies'      => $replies,
+                          'allow_reply'  => $allow_reply,
+                          'info'         => $info,
+                      )
+                  );
+            return $r[0];
         }
     }   // end function entry_details()
     
@@ -762,23 +780,43 @@ class blackForms {
         global $page_id, $section_id, $_tpl_data;
 
         $_GET['view'] = $_REQUEST['reply'];
-        $this->entry_details(true);
+        $r            = $this->entry_details(true);
 
         $mail_field = $this->get_settings('success_mail_to_field');
         $mail_to    = $this->entry[$mail_field];
+
+        $mail_from   = ( $this->get_settings('mail_from')!='' )
+                     ? $this->get_settings('mail_from')
+                     : SERVER_EMAIL
+                     ;
 
         $this->form->setForm('reply');
         $this->form->setAttr('action',$_SERVER['SCRIPT_NAME']);
         $this->form->getElement('page_id')->setAttr('value',$page_id);
         $this->form->getElement('reply')->setAttr('value',$_REQUEST['reply']);
         $this->form->getElement('mail_to')->setAttr('value',$mail_to);
-        $this->form->getElement('mail_from')->setValue($this->get_settings('mail_from'));
+        $this->form->getElement('mail_from')->setValue($mail_from);
         $this->form->getElement('mail_from_name')->setValue($this->get_settings('mail_from_name'));
 
         if($this->form->isSent() && $this->form->isValid())
         {
-            $user_id = CAT_Users::get_user_id();
-            $data    = $this->form->getData(1);
+            $user_id  = CAT_Users::get_user_id();
+            $data     = $this->form->getData(1);
+            $formdata = array_merge(
+                $r,
+                unserialize($r['data_serialized'])
+            );
+            $formdata['submitted_when'] = CAT_Helper_DateTime::getDate($formdata['submitted_when']);
+
+            $body     = $data['mail_body'];
+            $localparser = new Dwoo(CAT_PATH.'/temp/cache', CAT_PATH.'/temp/compiled');
+            $mailtext
+                = $localparser->get(
+                      new Dwoo_Template_String($body),
+                      $formdata
+                  );
+            $data['mail_body'] = $mailtext;
+
             foreach(array('do','reply','page_id') as $f)
                 unset($data[$f]);
             $this->bcf_dbh->insert(

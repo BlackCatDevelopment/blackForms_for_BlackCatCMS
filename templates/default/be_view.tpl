@@ -3,9 +3,9 @@
 </button>
 
 {if $info}
-<div class="bcf_info">
+<div class="fc_info">
 {$info}
-</div>
+</div><br />
 {/if}
 <table>
     <thead>

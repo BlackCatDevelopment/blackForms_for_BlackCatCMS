@@ -72,6 +72,12 @@ $LANG = array(
     'View entry details' => 'Details ansehen',
     'Your request' => 'Ihre Anfrage',
 // ----- entry details page -----
+    'Please note: The recipient will see this mail address in his mail client!'
+        => 'Bitte beachten: Der Empfänger sieht diese Mailadresse in seinem Mail Client!',
+    'Please note: The recipient will see this name in his mail client'
+        => 'Bitte beachten: Der Empfänger sieht diesen Namen in seinem Mail Client',
+    'Please note: Replies are not possible as there is no "mail from" address configured in the settings and no CMS email address is set.'
+        => 'Hinweis: Das Beantworten ist nicht möglich, da keine "Absender Mailadresse" in den Einstellungen gesetzt ist und es auch keine CMS-Einstellung hierfür gibt.',
     'Your reply was sent.' => 'Antwort wurde gesendet',
     'Unable to send the mail!' => 'Fehler beim Versand der Mail!',
 // ----- settings -----

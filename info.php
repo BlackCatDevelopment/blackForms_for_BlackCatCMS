@@ -20,7 +20,7 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  *
  *   @author          Bianka Martinovic
- *   @copyright       2013, Black Cat Development
+ *   @copyright       2014, Black Cat Development
  *   @link            http://blackcat-cms.org
  *   @license         http://www.gnu.org/licenses/gpl.html
  *   @category        CAT_Modules
@@ -49,7 +49,7 @@ $module_directory = "blackForms";
 $module_type = "module";
 $module_function = "page";
 $module_description = "BlackCat Forms Module";
-$module_version = "0.5";
+$module_version = "0.7";
 $module_platform = "1.x";
 $module_author = "Bianka Martinovic";
 $module_guid = "719D19C8-8981-D710-D248-DA00E59A6D86";

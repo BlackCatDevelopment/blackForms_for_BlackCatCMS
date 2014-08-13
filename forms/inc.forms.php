@@ -241,8 +241,12 @@ $FORMS = array(
             'name'     => 'preset_id',
         ),
         array(
-            'type'     => 'text',
+            'type'     => 'hidden',
             'name'     => 'name',
+        ),
+        array(
+            'type'     => 'text',
+            'name'     => 'display_name',
             'label'    => 'Element (field) name',
             'allow'    => 'text',
             'required' => true,
@@ -371,6 +375,7 @@ $FORMS = array(
                 'vader',
             ),
             'title' => 'For Mojito frontend template, you may try [base], [start] or [redmond], for example',
+            'class'    => 'uidisabled',
         ),
 
         array(
@@ -431,6 +436,7 @@ $FORMS = array(
             'name'     => 'success_mail_to_field',
             'label'    => 'Mail to address field',
             'options'  => array(),
+            'class'    => 'uidisabled',
         ),
         array(
             'type'     => 'text',
@@ -469,6 +475,7 @@ $FORMS = array(
             'label'    => 'Show page after finish',
             'title'    => 'If you choose a success page, the success message above will be ignored.',
             'options'  => array(),
+            'class'    => 'uidisabled',
         ),
     ),
 );

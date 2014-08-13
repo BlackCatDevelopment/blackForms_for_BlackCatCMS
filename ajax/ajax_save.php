@@ -152,6 +152,9 @@ if(count($r))
     {
         $form->removeElement($name,'FORMS');
     }
+    //
+    // save as new preset
+    //
     elseif($val->get('_REQUEST','action') == 'save_as_preset' && $val->get('_REQUEST','name'))
     {
         $new_config = serialize($form->getElements(false,false,'FORMS'));
@@ -172,7 +175,6 @@ if(count($r))
     // *********************************************************************
     else
     {
-
         $elem = array(
             'type'     => $type,
             'name'     => $name,
@@ -189,6 +191,7 @@ if(count($r))
                 if(!is_array($lines)) $lines = array($lines);
                 foreach($lines as $line)
                 {
+                    $line = trim($line);
                     if(substr_count($line,"|"))
                     {
                         list($key,$value) = explode("|",$line,2);
@@ -202,7 +205,10 @@ if(count($r))
                 $elem['options'] = $new_opt;
             }
             if($default)
-                $elem['selected'] = $default;
+                if($type=='select')
+                    $elem['selected'] = $default;
+                else
+                    $elem['checked']  = $default;
         }
         else
         {
@@ -210,24 +216,50 @@ if(count($r))
                 $elem['value'] = $default;
         }
 
-        $after_elem = NULL;
-
-        switch($where) {
-            case 'top':
-                $pos        = 'top';
-                break;
-            case 'after':
-                $after_elem = $after;
-                $pos        = 'after';
-                break;
-            case 'bottom':
-                $pos        = 'bottom';
-                break;
+        if($val->get('_REQUEST','submit_edit_element'))
+        {
+            // check if element already exists
+            if(!$form->hasElement($name))
+            {
+                $ajax    = array(
+                    'message'    => $val->lang()->translate('No such field.'),
+                    'success'    => false
+                );
+                print json_encode( $ajax );
+                exit();
+            }
+            // find element
+            foreach($data as $i=>$e)
+            {
+                if(isset($e['name']) && $e['name'] == $name)
+                {
+                    if($type=='')
+                        $elem['type'] = $e['type'];
+                    $data[$i] = $elem;
+                    break;
+                }
+            }
+            $new_config = serialize($data);
         }
-        $form->addElement($elem,$after_elem,$pos,'FORMS');
+        else
+        {
+            $after_elem = NULL;
+            switch($where) {
+                case 'top':
+                    $pos        = 'top';
+                    break;
+                case 'after':
+                    $after_elem = $after;
+                    $pos        = 'after';
+                    break;
+                case 'bottom':
+                    $pos        = 'bottom';
+                    break;
+            }
+            $form->addElement($elem,$after_elem,$pos,'FORMS');
+            $new_config = serialize($form->getElements(false,false,'FORMS'));
+        }
     }
-
-    $new_config = serialize($form->getElements(false,false,'FORMS'));
 
     $db->update(
         array(
@@ -257,4 +289,13 @@ if(count($r))
         print json_encode( $ajax );
         exit();
     }
+}
+else
+{
+    $ajax    = array(
+        'message'    => $val->lang()->translate('Invalid data (no such preset)'),
+        'success'    => false
+    );
+    print json_encode( $ajax );
+    exit();
 }
