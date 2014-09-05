@@ -208,6 +208,13 @@ $FORMS = array(
             'title'    => 'One option per line. Use <value>|<label> to have labeled options.',
         ),
         array(
+            'type'     => 'text',
+            'name'     => 'style',
+            'label'    => 'CSS style',
+            'title'    => 'Styling is handled via jQuery UI by default. Only add styles here if you really need them.',
+            'allow'    => 'text',
+        ),
+        array(
             'type'     => 'radiogroup',
             'name'     => 'required',
             'label'    => 'Required',
@@ -274,6 +281,13 @@ $FORMS = array(
             'name'     => 'options',
             'label'    => 'Options (for select/radio/checkbox)',
             'title'    => 'One option per line. Use <value>|<label> to have labeled options.',
+        ),
+        array(
+            'type'     => 'text',
+            'name'     => 'style',
+            'label'    => 'CSS style',
+            'title'    => 'Styling is handled via jQuery UI by default. Only add styles here if you really need them.',
+            'allow'    => 'text',
         ),
         array(
             'type'     => 'radiogroup',

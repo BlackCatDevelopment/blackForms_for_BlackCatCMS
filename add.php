@@ -44,7 +44,11 @@ if (defined('CAT_PATH')) {
     if (!$inc) trigger_error(sprintf("[ <b>%s</b> ] Can't include class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
 }
 
+if(file_exists(CAT_URL.'/modules/lib_wblib'))
 include_once CAT_PATH.'/modules/lib_wblib/wblib/wbQuery.php';
+else
+    include_once CAT_PATH.'/modules/blackForms/wblib/wbQuery.php';
+
 $db = \wblib\wbQuery::getInstance(
     array(
         'host'   => CAT_DB_HOST,

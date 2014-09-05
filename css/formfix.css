@@ -38,6 +38,7 @@ div.ui-dialog.ui-widget.ui-widget-content label.fblabel,
 section#content.gradient_gray .fblabel,
 div.ui-dialog.ui-widget.ui-widget-content .fblabel{width:240px;display:inline-block;text-align:right;font-weight:900;}
 div#mod_blackforms div#tabs div.bform_info.right div.fbform button.ui-button{width:250px;margin-top:2px;margin-bottom:0;}
+div#dialog2.ui-dialog-content.ui-widget-content .radiogroup label.ui-state-active{border:0;font-weight:900;}
 
 div#mod_blackforms button.right{height:20px;width:20px;font-size:0.8em;padding:0;}
 

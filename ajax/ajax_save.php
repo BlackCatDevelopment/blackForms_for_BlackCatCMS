@@ -76,17 +76,7 @@ if ($page_id=='')
     exit();
 }
 
-// *********************************************************************
-// wblib2 autoloader
-// *********************************************************************
-spl_autoload_register(function($class)
-{
-    $file = str_replace('\\','/',CAT_PATH).'/modules/lib_wblib/'.str_replace(array('\\','_'), array('/','/'), $class).'.php';
-    if (file_exists($file)) {
-        @require $file;
-    }
-    // next in stack
-});
+include dirname(__FILE__).'/../init.php';
 
 // *********************************************************************
 // load form data

@@ -44,16 +44,6 @@ if (defined('CAT_PATH')) {
     if (!$inc) trigger_error(sprintf("[ <b>%s</b> ] Can't include class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
 }
 
-// wblib2 autoloader
-spl_autoload_register(function($class)
-{
-    $file = str_replace('\\','/',CAT_PATH).'/modules/lib_wblib/'.str_replace(array('\\','_'), array('/','/'), $class).'.php';
-    if (file_exists($file)) {
-        @require $file;
-    }
-    // next in stack
-});
-
 include dirname(__FILE__).'/../init.php';
 
 class blackForms {
@@ -94,8 +84,17 @@ class blackForms {
         // use locals instead of cdns
         \wblib\wbFormsJQuery::set('core_cdn',CAT_URL.'/modules/lib_jquery/jquery-core/jquery-core.min.js');
         \wblib\wbFormsJQuery::set('ui_cdn',CAT_URL.'/modules/lib_jquery/jquery-ui/ui/jquery-ui.min.js');
+
+        if(file_exists(CAT_URL.'/modules/lib_wblib'))
+        {
         \wblib\wbFormsJQuery::set('sel_css',CAT_URL.'/modules/lib_wblib/wblib/3rdparty/select2/select2.css');
         \wblib\wbFormsJQuery::set('sel_cdn',CAT_URL.'/modules/lib_wblib/wblib/3rdparty/select2/select2.min.js');
+        }
+        else
+        {
+            \wblib\wbFormsJQuery::set('sel_css',CAT_URL.'/modules/blackForms/wblib/3rdparty/select2/select2.css');
+            \wblib\wbFormsJQuery::set('sel_cdn',CAT_URL.'/modules/blackForms/wblib/3rdparty/select2/select2.min.js');
+        }
     }   // end function __construct()
 
     /**
@@ -1054,7 +1053,7 @@ class blackForms {
             array(
                 'fields' => array(
                     't1.*',
-                    '(SELECT COUNT(*) FROM cat_mod_blackforms_replies AS t2 WHERE t2.submission_id = t1.submission_id ) AS replies'
+                    '(SELECT COUNT(*) FROM '.CAT_TABLE_PREFIX.'mod_blackforms_replies AS t2 WHERE t2.submission_id = t1.submission_id ) AS replies'
                 ),
                 'tables' => 'mod_blackforms_submissions',
                 'where'  => 'section_id == ?',

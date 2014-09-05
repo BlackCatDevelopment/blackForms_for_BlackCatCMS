@@ -137,7 +137,7 @@ if(typeof jQuery != 'undefined')
                 .each( function() {
                 $(this).add($(this).nextUntil('label,button,div')).wrapAll('<div class="line"></div>');
             });
-            $('div.radiogroup,div.checkboxgroup').css('display','inline-block');
+            $('div.radiogroup,div.checkboxgroup','div.left').css('display','inline-block');
             $('div.line').find('br').remove();
             $('div.line').append('<button class="right fc_gradient_blue fc_br_all icon icon-plus"></button>');
             $('div.line').append('<button class="right fc_gradient_red fc_br_all icon icon-minus"></button>');
@@ -208,6 +208,7 @@ if(typeof jQuery != 'undefined')
                 var field = $(this).parent().find('input,select,textarea').prop('id');
                 dialog2.find('input#name').val(field);
                 dialog2.find('input#display_name').val(field);
+                dialog2.find('input#style').val($(this).parent().find('input,select,textarea').attr('style'));
                 var text  = $(this).parent().find('.fblabel').text();
                 dialog2.find('input#label').val(text);
                 if( $(this).parent().find('select').length )

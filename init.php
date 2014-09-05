@@ -20,7 +20,7 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  *
  *   @author          Bianka Martinovic
- *   @copyright       2013, Black Cat Development
+ *   @copyright       2014, Black Cat Development
  *   @link            http://blackcat-cms.org
  *   @license         http://www.gnu.org/licenses/gpl.html
  *   @category        CAT_Modules
@@ -44,8 +44,34 @@ if (defined('CAT_PATH')) {
     if (!$inc) trigger_error(sprintf("[ <b>%s</b> ] Can't include class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
 }
 
+// wblib2 autoloader
+spl_autoload_register(function($class)
+{
+    foreach(
+        array(
+            str_replace('\\','/',CAT_PATH).'/modules/lib_wblib/',
+            str_replace('\\','/',CAT_PATH).'/modules/blackForms/'
+        ) as $path
+    ) {
+        $file = $path.str_replace(array('\\','_'), array('/','/'), $class).'.php';
+        if (file_exists($file)) {
+            @require $file;
+            return;
+        }
+    }
+    // next in stack
+});
+
+if(file_exists(CAT_URL.'/modules/lib_wblib'))
+{
 define('WBLIB_PATH', CAT_PATH.'/modules/lib_wblib/wblib');
 define('WBLIB_URL',  CAT_URL.'/modules/lib_wblib/wblib');
+}
+else
+{
+    define('WBLIB_PATH', CAT_PATH.'/modules/blackForms/wblib');
+    define('WBLIB_URL',  CAT_URL.'/modules/blackForms/wblib');
+}
 define('BFORM_URL', $_SERVER['SCRIPT_NAME'].'?page_id='.$page_id );
 
 // template engine defaults

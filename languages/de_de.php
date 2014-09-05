@@ -47,9 +47,11 @@ if (defined('CAT_PATH')) {
 $LANG = array(
 // ----- globals -----
     'Cancel' => 'Abbrechen',
+    'No' => 'Nein',
     'This item is required' => 'Pflichtfeld',
     'Submit' => 'Absenden',
     'Success' => 'Erfolgreich',
+    'Yes' => 'Ja',
     '[please choose one...]' => '[bitte eine auswählen...]',
 // ----- frontend -----
     'Form submission succeeded' => 'Formular erfolgreich gesendet',
@@ -126,18 +128,22 @@ $LANG = array(
     'after...'    => 'hinter...',
     'at bottom'   => 'am Ende',
     'Country select' => 'Länderauswahl (Dropdown)',
+    'Default value' => 'Standardwert',
     'Edit field (one line)' => 'Eingabefeld (einzeilig)',
     'Element (field) name' => 'Element (Feld) Name',
     'Field'       => 'Feld',
     'Hidden field' => 'Verstecktes Feld',
     'Image select' => 'Bildauswahl (Dropdown)',
+    'Label' => 'Beschriftung',
     'on top'      => 'am Anfang',
     'Options (for select/radio/checkbox)' => 'Optionen (für Select/Radio/Checkbox)',
     'Please note: You cannot edit the field name as it makes no sense.'
         => 'Hinweis: Der Feldname kann nicht geändert werden, da das nicht sinnvoll ist.',
     'Required'    => 'Pflichtfeld',
     'Save as new preset' => 'Als neues Preset speichern',
+    'Styling is handled via jQuery UI by default. Only add styles here if you really need them.' => 'Das Styling wird via jQuery UI gehandhabt. Hier nur Styles hinzufügen, wenn sie wirklich benötigt werden.',
     'Text field (multiline)' => 'Textfeld (mehrzeilig)',
+    'Type' => 'Typ',
 // ----- presets ------
     'Standard contact form with 4 fields'
         => 'Standard Kontaktformular mit 4 Feldern',
