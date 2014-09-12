@@ -44,6 +44,8 @@ if (defined('CAT_PATH')) {
 	}
 }
 
+$debug = false;
+
 header('Content-type: application/json');
 
 // *********************************************************************
@@ -264,7 +266,8 @@ if(count($r))
     if($db->isError())
     {
         $ajax    = array(
-            'message'    => $val->lang()->translate('Error saving changes to the DB.'),
+            'message'    => $val->lang()->translate('Error saving changes to the DB.')
+                         .  ( $debug ? $db->getLastStatement() . ' - ' . $db->getError() : '' ),
             'success'    => false
         );
         print json_encode( $ajax );

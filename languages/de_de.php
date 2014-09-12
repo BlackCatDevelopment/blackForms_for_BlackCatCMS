@@ -20,7 +20,7 @@
  *   along with this program; if not, see <http://www.gnu.org/licenses/>.
  *
  *   @author          Bianka Martinovic
- *   @copyright       2013, Black Cat Development
+ *   @copyright       2014, Black Cat Development
  *   @link            http://blackcat-cms.org
  *   @license         http://www.gnu.org/licenses/gpl.html
  *   @category        CAT_Modules
@@ -137,8 +137,8 @@ $LANG = array(
     'Label' => 'Beschriftung',
     'on top'      => 'am Anfang',
     'Options (for select/radio/checkbox)' => 'Optionen (für Select/Radio/Checkbox)',
-    'Please note: You cannot edit the field name as it makes no sense.'
-        => 'Hinweis: Der Feldname kann nicht geändert werden, da das nicht sinnvoll ist.',
+    'Please note: You cannot edit the field name and type as it makes no sense.'
+        => 'Hinweis: Der Feldname und -typ kann nicht geändert werden, da das nicht sinnvoll ist.',
     'Required'    => 'Pflichtfeld',
     'Save as new preset' => 'Als neues Preset speichern',
     'Styling is handled via jQuery UI by default. Only add styles here if you really need them.' => 'Das Styling wird via jQuery UI gehandhabt. Hier nur Styles hinzufügen, wenn sie wirklich benötigt werden.',

@@ -1,7 +1,9 @@
 CREATE TABLE IF NOT EXISTS `cat_mod_blackforms_forms` (
   `section_id` int(10) NOT NULL,
   `preset` varchar(50) NOT NULL,
-  `config` text
+  `config` text NULL,
+  `is_changed` ENUM('Y','N') NULL DEFAULT 'N',
+  UNIQUE INDEX `section_id_preset` (`section_id`, `preset`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `cat_mod_blackforms_presets` (

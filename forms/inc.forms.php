@@ -260,8 +260,12 @@ $FORMS = array(
             'disabled' => true,
         ),
         array(
+            'type'     => 'hidden',
+            'name'     => 'type',
+        ),
+        array(
             'type'     => 'info',
-            'label'    => 'Please note: You cannot edit the field name as it makes no sense.',
+            'label'    => 'Please note: You cannot edit the field name and type as it makes no sense.',
         ),
         array(
             'type'     => 'text',

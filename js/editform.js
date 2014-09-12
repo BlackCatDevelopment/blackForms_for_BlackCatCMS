@@ -209,6 +209,7 @@ if(typeof jQuery != 'undefined')
                 dialog2.find('input#name').val(field);
                 dialog2.find('input#display_name').val(field);
                 dialog2.find('input#style').val($(this).parent().find('input,select,textarea').attr('style'));
+                dialog2.find('input#type').val($('#'+field).prop('tagName').toLowerCase());
                 var text  = $(this).parent().find('.fblabel').text();
                 dialog2.find('input#label').val(text);
                 if( $(this).parent().find('select').length )

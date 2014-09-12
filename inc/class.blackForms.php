@@ -1060,7 +1060,7 @@ class blackForms {
                 'params' => $section_id
             )
         );
-        if(count($r))
+        if(is_array($r) && count($r))
         {
             for($i=0;$i<count($r);$i++)
             {

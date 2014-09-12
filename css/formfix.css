@@ -26,14 +26,14 @@ div.fc_blocks_content div#mod_blackforms label,
 section#content.gradient_gray label{vertical-align: top;}
 div.fc_blocks_content div#mod_blackforms .fbselect,
 section#content.gradient_gray .fbselect{margin-bottom:15px;margin-top:5px;}
-div.fc_blocks_content div#mod_blackforms button.ui-button,
+div#mod_blackforms button.ui-button,
 section#content.gradient_gray button.ui-button{padding:3px 4px 4px 3px;margin:15px;width:150px;}
 div#mod_blackforms div#tabs div.fbform button{margin-right:3px;}
 div.fc_blocks_content div#mod_blackforms .ui-buttonset,
 section#content.gradient_gray .ui-buttonset{margin-top:10px;}
 div.fc_blocks_content div#mod_blackforms .ui-button,
 section#content.gradient_gray .ui-button{text-shadow:none;}
-div.fc_blocks_content div#mod_blackforms .fblabel,
+div#mod_blackforms .fblabel,
 div.ui-dialog.ui-widget.ui-widget-content label.fblabel,
 section#content.gradient_gray .fblabel,
 div.ui-dialog.ui-widget.ui-widget-content .fblabel{width:240px;display:inline-block;text-align:right;font-weight:900;}
