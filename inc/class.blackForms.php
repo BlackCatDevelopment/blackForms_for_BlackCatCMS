@@ -61,16 +61,21 @@ class blackForms {
     public function __construct()
     {
         // initialize database connections
-        $this->bcf_dbh = \wblib\wbQuery::getInstance(
-            array(
-                'host'   => CAT_DB_HOST,
-                'user'   => CAT_DB_USERNAME,
-                'pass'   => CAT_DB_PASSWORD,
-                'dbname' => CAT_DB_NAME,
-                'prefix' => CAT_TABLE_PREFIX,
-            )
-        );
-
+        if(version_compare(CAT_VERSION,'1.2','>=')) {
+            $this->bcf_dbh = \wblib\wbQuery::getInstance(CAT_Helper_DB::getConfig());
+        }
+        else {
+            $this->bcf_dbh = \wblib\wbQuery::getInstance(
+                array(
+                    'host'   => CAT_DB_HOST,
+                    'user'   => CAT_DB_USERNAME,
+                    'pass'   => CAT_DB_PASSWORD,
+                    'dbname' => CAT_DB_NAME,
+                    'prefix' => CAT_TABLE_PREFIX,
+                    'port'   => CAT_DB_PORT,
+                )
+            );
+        }
         // initialize templates
         global $_tpl_data;
         $_tpl_data = array();
@@ -87,8 +92,8 @@ class blackForms {
 
         if(file_exists(CAT_URL.'/modules/lib_wblib'))
         {
-        \wblib\wbFormsJQuery::set('sel_css',CAT_URL.'/modules/lib_wblib/wblib/3rdparty/select2/select2.css');
-        \wblib\wbFormsJQuery::set('sel_cdn',CAT_URL.'/modules/lib_wblib/wblib/3rdparty/select2/select2.min.js');
+            \wblib\wbFormsJQuery::set('sel_css',CAT_URL.'/modules/lib_wblib/wblib/3rdparty/select2/select2.css');
+            \wblib\wbFormsJQuery::set('sel_cdn',CAT_URL.'/modules/lib_wblib/wblib/3rdparty/select2/select2.min.js');
         }
         else
         {
@@ -141,6 +146,9 @@ class blackForms {
                     case 'form':
                         $this->editform();
                 	   	break;
+                    case 'help':
+                        $this->showHelp();
+                        break;
                 }
             }
             else
@@ -781,8 +789,8 @@ class blackForms {
         $_GET['view'] = $_REQUEST['reply'];
         $r            = $this->entry_details(true);
 
-        $mail_field = $this->get_settings('success_mail_to_field');
-        $mail_to    = $this->entry[$mail_field];
+        $mail_field  = $this->get_settings('success_mail_to_field');
+        $mail_to     = $this->entry[$mail_field];
 
         $mail_from   = ( $this->get_settings('mail_from')!='' )
                      ? $this->get_settings('mail_from')

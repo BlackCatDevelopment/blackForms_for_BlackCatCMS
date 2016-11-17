@@ -62,10 +62,10 @@ spl_autoload_register(function($class)
     // next in stack
 });
 
-if(file_exists(CAT_URL.'/modules/lib_wblib'))
+if(file_exists(CAT_PATH.'/modules/lib_wblib'))
 {
-define('WBLIB_PATH', CAT_PATH.'/modules/lib_wblib/wblib');
-define('WBLIB_URL',  CAT_URL.'/modules/lib_wblib/wblib');
+    define('WBLIB_PATH', CAT_PATH.'/modules/lib_wblib/wblib');
+    define('WBLIB_URL',  CAT_URL.'/modules/lib_wblib/wblib');
 }
 else
 {
@@ -81,3 +81,19 @@ $parser->setFallbackPath(dirname(__FILE__).'/templates/default');
 $parser->setGlobals(array(
     'url' => $_SERVER['SCRIPT_NAME'].'?page_id='.$page_id,
 ));
+
+if(version_compare(CAT_VERSION,'1.2','>=')) {
+    $db = \wblib\wbQuery::getInstance(CAT_Helper_DB::getConfig());
+}
+else {
+    $db = \wblib\wbQuery::getInstance(
+        array(
+            'host'   => CAT_DB_HOST,
+            'user'   => CAT_DB_USERNAME,
+            'pass'   => CAT_DB_PASSWORD,
+            'dbname' => CAT_DB_NAME,
+            'prefix' => CAT_TABLE_PREFIX,
+            'port'   => CAT_DB_PORT,
+        )
+    );
+}

@@ -57,10 +57,18 @@ $mod_headers = array(
     ),
     'backend' => array(
         'js' => array(
-            '/modules/lib_wblib/wblib/3rdparty/validate/jquery.validate.min.js',
         ),
     ),
 );
+
+if(file_exists(CAT_PATH.'/modules/lib_wblib'))
+{
+    $mod_headers['backend']['js'][] = '/modules/lib_wblib/wblib/3rdparty/js/validate/jquery.validate.min.js';
+}
+else
+{
+    $mod_headers['backend']['js'][] = '/modules/blackForms/wblib/3rdparty/js/validate/jquery.validate.min.js';
+}
 
 if(isset($_GET['do']) && $_GET['do'] == 'form')
 {

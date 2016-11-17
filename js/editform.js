@@ -212,6 +212,8 @@ if(typeof jQuery != 'undefined')
                 dialog2.find('input#type').val($('#'+field).prop('tagName').toLowerCase());
                 var text  = $(this).parent().find('.fblabel').text();
                 dialog2.find('input#label').val(text);
+                var info  = $(this).parent().find('.fbinfo').prop('title');
+                dialog2.find('textarea#infotext').val(info);
                 if( $(this).parent().find('select').length )
                 {
                     var myOptions = [] ;

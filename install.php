@@ -55,15 +55,21 @@ else
 }
 
 // ----- import tables -----
-$db = \wblib\wbQuery::getInstance(
-    array(
-        'host'   => CAT_DB_HOST,
-        'user'   => CAT_DB_USERNAME,
-        'pass'   => CAT_DB_PASSWORD,
-        'dbname' => CAT_DB_NAME,
-        'prefix' => CAT_TABLE_PREFIX,
-    )
-);
+if(version_compare(CAT_VERSION,'1.2','>=')) {
+    $db = \wblib\wbQuery::getInstance(CAT_Helper_DB::getConfig());
+}
+else {
+    $db = \wblib\wbQuery::getInstance(
+        array(
+            'host'   => CAT_DB_HOST,
+            'user'   => CAT_DB_USERNAME,
+            'pass'   => CAT_DB_PASSWORD,
+            'dbname' => CAT_DB_NAME,
+            'prefix' => CAT_TABLE_PREFIX,
+            'port'   => CAT_DB_PORT,
+        )
+    );
+}
 $import = file_get_contents( dirname(__FILE__)."/install/structure.sql" );
 $db->sqlImport($import,'cat_',CAT_TABLE_PREFIX);
 
@@ -75,11 +81,13 @@ $addons_helper = new CAT_Helper_Addons();
 foreach(
 	array(
 		'ajax/ajax_save.php',
+        'ajax/ajax_sort.php',
 	)
 	as $file
 ) {
 	if ( false === $addons_helper->sec_register_file( 'blackForms', $file ) )
 	{
 		 error_log( "Unable to register file -$file-!" );
-        }
     }
+}
+

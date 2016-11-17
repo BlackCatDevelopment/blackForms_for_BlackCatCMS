@@ -196,10 +196,19 @@ $FORMS = array(
             'required' => true,
         ),
         array(
+            'type'     => 'textarea',
+            'name'     => 'infotext',
+            'label'    => 'Infotext',
+            'allow'    => 'text',
+            'required' => false,
+            'title'    => 'Will be shown as little (i) Icon with tooltip on mouse over; keep it short',
+        ),
+        array(
             'type'     => 'text',
             'name'     => 'default_value',
             'label'    => 'Default value',
             'allow'    => 'text',
+            'title'    => 'Used if the user does not enter a value',
         ),
         array(
             'type'     => 'textarea',
@@ -275,9 +284,18 @@ $FORMS = array(
             'required' => true,
         ),
         array(
+            'type'     => 'textarea',
+            'name'     => 'infotext',
+            'label'    => 'Infotext',
+            'title'    => 'Will be shown as little (i) Icon with tooltip on mouse over; keep it short',
+            'allow'    => 'text',
+            'required' => false,
+        ),
+        array(
             'type'     => 'text',
             'name'     => 'default_value',
             'label'    => 'Default value',
+            'title'    => 'Used if the user does not enter a value',
             'allow'    => 'text',
         ),
         array(

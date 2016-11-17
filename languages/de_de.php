@@ -59,10 +59,14 @@ $LANG = array(
     'Thank you for yoursubmission!' => 'Vielen Dank für Ihre Mitteilung!',
 // ----- preset/form page -----
     'Completely reset' => 'Komplett zurücksetzen',
+    'CSS style' => 'CSS Stil',
     'Edit form' => 'Formular anpassen',
+    'One option per line. Use <value>|<label> to have labeled options.' => 'Eine Option pro Zeile. <Wert>|<Beschriftung> verwenden, wenn übergebener Wert und Anzeigewert unterschiedlich sind.',
     'Please choose a preset...' => 'Bitte wählen Sie eine Vorlage...',
     'Preset' => 'Vorlage',
     'Reset to preset' => 'Auf Vorlage zurücksetzen',
+    'Used if the user does not enter a value' => 'Wird verwendet wenn der Benutzer keinen Wert angibt',
+    'Will be shown as little (i) Icon with tooltip on mouse over; keep it short' => 'Wird als kleines (i)-Icon mit einem Tooltip bei Mouseover angezeigt; kurz halten',
 // ----- entries page -----
     'Export successful' => 'Export erfolgreich',
     'Guest (not logged in)' => 'Besucher (nicht angemeldet)',

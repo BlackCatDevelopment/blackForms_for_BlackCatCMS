@@ -143,6 +143,7 @@ if(count($r))
     if($val->get('_REQUEST','do') == 'remove')
     {
         $form->removeElement($name,'FORMS');
+        $new_config = serialize($form->getElements(false,false,'FORMS'));
     }
     //
     // save as new preset
