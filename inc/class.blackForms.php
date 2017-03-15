@@ -84,7 +84,6 @@ class blackForms {
         $this->form = \wblib\wbForms::getInstanceFromFile('inc.forms.php',dirname(__FILE__).'/../forms');
         $this->form->set('lang_path',dirname(__FILE__).'/../languages');
         $this->form->set('wblib_url',WBLIB_URL);
-        $this->form->setAttr('action',$_SERVER['SCRIPT_NAME']);
 
         // use locals instead of cdns
         \wblib\wbFormsJQuery::set('core_cdn',CAT_URL.'/modules/lib_jquery/jquery-core/jquery-core.min.js');
@@ -173,10 +172,14 @@ class blackForms {
 
         $theme = $this->get_settings('ui_theme','start');
         if($theme == 'base' && file_exists(CAT_PATH.'/modules/lib_jquery/jquery-ui/themes/base/jquery-ui.css'))
+        {
             \wblib\wbFormsJQuery::set('ui_css', CAT_URL.'/modules/lib_jquery/jquery-ui/themes/%s/jquery-ui.css');
+        }
         \wblib\wbFormsJQuery::set('ui_theme',$theme);
 
         $r = $this->load_form();
+        $this->form->setAttr('action',$_SERVER['SCRIPT_NAME']); // fix in v0.13
+
         if(!count($r))
         {
             $parser->output('fe_view',array('is_error'=>1,'info'=>$this->form->t('No form configured yet')));
