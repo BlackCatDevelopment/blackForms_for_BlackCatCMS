@@ -56,7 +56,8 @@ $LANG = array(
 // ----- frontend -----
     'Form submission succeeded' => 'Formular erfolgreich gesendet',
     'No form configured yet' => 'Formular noch nicht konfiguriert',
-    'Thank you for yoursubmission!' => 'Vielen Dank für Ihre Mitteilung!',
+    'Please fix the errors stated below' => 'Bitte die angemerkten Probleme beheben',
+    'Thank you for your submission!' => 'Vielen Dank für Ihre Mitteilung!',
 // ----- preset/form page -----
     'Completely reset' => 'Komplett zurücksetzen',
     'CSS style' => 'CSS Stil',
@@ -133,10 +134,12 @@ $LANG = array(
     'at bottom'   => 'am Ende',
     'Country select' => 'Länderauswahl (Dropdown)',
     'Default value' => 'Standardwert',
+    'Edit field' => 'Element bearbeiten',
     'Edit field (one line)' => 'Eingabefeld (einzeilig)',
     'Element (field) name' => 'Element (Feld) Name',
     'Field'       => 'Feld',
     'Hidden field' => 'Verstecktes Feld',
+    'HTML5 Attribute' => 'HTML5 Attribut',
     'Image select' => 'Bildauswahl (Dropdown)',
     'Label' => 'Beschriftung',
     'on top'      => 'am Anfang',

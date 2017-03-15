@@ -261,6 +261,10 @@ $FORMS = array(
             'name'     => 'name',
         ),
         array(
+            'type'     => 'hidden',
+            'name'     => 'type',
+        ),
+        array(
             'type'     => 'text',
             'name'     => 'display_name',
             'label'    => 'Element (field) name',
@@ -269,12 +273,30 @@ $FORMS = array(
             'disabled' => true,
         ),
         array(
-            'type'     => 'hidden',
-            'name'     => 'type',
-        ),
-        array(
             'type'     => 'info',
             'label'    => 'Please note: You cannot edit the field name and type as it makes no sense.',
+        ),
+        array(
+            'type'     => 'select',
+            'name'     => 'html5attr',
+            'label'    => 'HTML5 Attribute',
+            'title'    => 'Please make sure that the element type supports the attribute you choose here',
+            'options'  => array(
+                '',
+                'text',
+                'color',
+                'date',
+                'datetime-local',
+                'email',
+                'month',
+                'number',
+                'range',
+                'search',
+                'tel',
+                'time',
+                'url',
+                'week',
+            ),
         ),
         array(
             'type'     => 'text',
@@ -285,7 +307,7 @@ $FORMS = array(
         ),
         array(
             'type'     => 'textarea',
-            'name'     => 'infotext',
+            'name'     => 'title',
             'label'    => 'Infotext',
             'title'    => 'Will be shown as little (i) Icon with tooltip on mouse over; keep it short',
             'allow'    => 'text',

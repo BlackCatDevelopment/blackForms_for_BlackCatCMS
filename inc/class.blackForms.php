@@ -112,6 +112,7 @@ class blackForms {
 
         // always use UITheme "base" in BE (available in BC)
         \wblib\wbFormsJQuery::set('ui_theme','base');
+        //\wblib\wbFormsJQuery::set('load_ui_theme',false);
 
         $this->count_exports();
 
@@ -186,86 +187,95 @@ class blackForms {
         }
         else
         {
-            if($this->form->isSent() && $this->form->isValid())
+            if($this->form->isSent())
             {
-                $user_id = CAT_Users::get_user_id();
-                if(!$user_id) $user_id = 0;
-                $this->bcf_dbh->insert(
-                    array(
-                        'tables' => 'mod_blackforms_submissions',
-                        'fields' => array('section_id','submitted_when','submitted_by','data_serialized'),
-                        'values' => array($section_id,time(),$user_id,serialize($this->form->getData(1)))
-                    )
-                );
-                if($this->bcf_dbh->isError())
+                if($this->form->isValid())
                 {
-                    $this->form->setInfo(
-                        $this->form->t(
-                             'Sorry, but we are unable to save your submission!'
+                    $user_id = CAT_Users::get_user_id();
+                    if(!$user_id) $user_id = 0;
+                    $this->bcf_dbh->insert(
+                        array(
+                            'tables' => 'mod_blackforms_submissions',
+                            'fields' => array('section_id','submitted_when','submitted_by','data_serialized'),
+                            'values' => array($section_id,time(),$user_id,serialize($this->form->getData(1)))
                         )
-                        .' '.$this->bcf_dbh->getError()
                     );
-                }
-                else
-                {
-                    $settings = $this->get_settings();
-                    $mailer   = NULL;
-                    $_GET['view'] = $this->bcf_dbh->lastInsertId();
-                    self::entry_details(true); // sets $_tpl_data['content']
-                    $data     = $this->form->getData();
-                    $elements = $this->form->getElements(true,true,'FORMS');
-                    $replace  = array();
-                    foreach($elements as $e)
-                        $replace[$e['name']] = ( isset($data[$e['name']]) ? $data[$e['name']] : '' );
-                    $localparser = new Dwoo(CAT_PATH.'/temp/cache', CAT_PATH.'/temp/compiled');
-
-                    // Send mail to admin
-                    if(isset($settings['send_mail']) && strtolower($settings['send_mail']) == 'y')
+                    if($this->bcf_dbh->isError())
                     {
-                        $mailer = CAT_Helper_Mail::getInstance();
-                        //$fromaddress, $toaddress, $subject, $message, $fromname=''
-                        $mailer->sendMail(
-                            ( isset($settings['mail_from'])      ? $settings['mail_from']      : SERVER_EMAIL ),
-                            ( isset($settings['mail_to'])        ? $settings['mail_to']        : SERVER_EMAIL ),
-                            ( isset($settings['mail_subject'])   ? $settings['mail_subject']   : $this->form->t('blackForms form submission completed') ),
-                            $_tpl_data['content'],
-                            ( isset($settings['mail_from_name']) ? $settings['mail_from_name'] : NULL )
+                        $this->form->setInfo(
+                            $this->form->t(
+                                 'Sorry, but we are unable to save your submission!'
+                            )
+                            .' '.$this->bcf_dbh->getError()
                         );
-                    }
-                    // send mail to guest
-                    if(isset($settings['success_send_mail']) && strtolower($settings['success_send_mail']) == 'y' && isset($data[$settings['success_mail_to_field']]) )
-                    {
-                        if(!$mailer)
-                            $mailer = CAT_Helper_Mail::getInstance();
-                        $mailtext
-                            = $localparser->get(
-                                  new Dwoo_Template_String($settings['success_mail_body']),
-                                  $replace
-                              );
-                        $mailer->sendMail(
-                            ( isset($settings['success_mail_from'])      ? $settings['success_mail_from']    : SERVER_EMAIL ),
-                            $data[$settings['success_mail_to_field']],
-                            ( isset($settings['success_mail_subject'])   ? $settings['success_mail_subject'] : $this->form->t('blackForms form submission completed') ),
-                            $mailtext,
-                            ( isset($settings['success_mail_from_name']) ? $settings['mail_from_name']       : NULL )
-                        );
-                    }
-                    if(isset($settings['success_page']) && $settings['success_page'] !== '' && $settings['success_page'] !== '0')
-                    {
-                        echo "<script type='text/javascript'>location.href='".CAT_Helper_Page::getLink($settings['success_page'])."';</script>";
                     }
                     else
                     {
-                        $_tpl_data['info'] = $this->form->t('Form submission succeeded');
-                        if(isset($settings['success_message']) && $settings['success_message']!='' )
+                        $settings = $this->get_settings();
+                        $mailer   = NULL;
+                        $_GET['view'] = $this->bcf_dbh->lastInsertId();
+                        self::entry_details(true); // sets $_tpl_data['content']
+                        $data     = $this->form->getData();
+                        $elements = $this->form->getElements(true,true,'FORMS');
+                        $replace  = array();
+                        foreach($elements as $e)
+                            $replace[$e['name']] = ( isset($data[$e['name']]) ? $data[$e['name']] : '' );
+                        $localparser = new Dwoo(CAT_PATH.'/temp/cache', CAT_PATH.'/temp/compiled');
+
+                        // Send mail to admin
+                        if(isset($settings['send_mail']) && strtolower($settings['send_mail']) == 'y')
                         {
-                            $_tpl_data['content']
+                            $mailer = CAT_Helper_Mail::getInstance();
+                            //$fromaddress, $toaddress, $subject, $message, $fromname=''
+                            $mailer->sendMail(
+                                ( isset($settings['mail_from'])      ? $settings['mail_from']      : SERVER_EMAIL ),
+                                ( isset($settings['mail_to'])        ? $settings['mail_to']        : SERVER_EMAIL ),
+                                ( isset($settings['mail_subject'])   ? $settings['mail_subject']   : $this->form->t('blackForms form submission completed') ),
+                                $_tpl_data['content'],
+                                ( isset($settings['mail_from_name']) ? $settings['mail_from_name'] : NULL )
+                            );
+                        }
+                        // send mail to guest
+                        if(isset($settings['success_send_mail']) && strtolower($settings['success_send_mail']) == 'y' && isset($data[$settings['success_mail_to_field']]) )
+                        {
+                            if(!$mailer)
+                                $mailer = CAT_Helper_Mail::getInstance();
+                            $mailtext
                                 = $localparser->get(
-                                      new Dwoo_Template_String($settings['success_message']),
+                                      new Dwoo_Template_String($settings['success_mail_body']),
                                       $replace
                                   );
+                            $mailer->sendMail(
+                                ( isset($settings['success_mail_from'])      ? $settings['success_mail_from']    : SERVER_EMAIL ),
+                                $data[$settings['success_mail_to_field']],
+                                ( isset($settings['success_mail_subject'])   ? $settings['success_mail_subject'] : $this->form->t('blackForms form submission completed') ),
+                                $mailtext,
+                                ( isset($settings['success_mail_from_name']) ? $settings['mail_from_name']       : NULL )
+                            );
+                        }
+                        if(isset($settings['success_page']) && $settings['success_page'] !== '' && $settings['success_page'] !== '0')
+                        {
+                            echo "<script type='text/javascript'>location.href='".CAT_Helper_Page::getLink($settings['success_page'])."';</script>";
+                        }
+                        else
+                        {
+                            $_tpl_data['info'] = $this->form->t('Form submission succeeded');
+                            if(isset($settings['success_message']) && $settings['success_message']!='' )
+                            {
+                                $_tpl_data['content']
+                                    = $localparser->get(
+                                          new Dwoo_Template_String($settings['success_message']),
+                                          $replace
+                                      );
+                            }
                         }
                     }
+                }   // end if($this->form->isValid())
+                else
+                {
+                    $this->form->setError($this->form->t('Please fix the errors stated below'));
+                    $this->form->setData($this->form->getData(1));
+                    $_tpl_data['form'] = $this->form->getForm();
                 }
             }
             else

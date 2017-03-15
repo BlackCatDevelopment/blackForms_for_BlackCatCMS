@@ -21,7 +21,7 @@ div.fc_blocks_content div#mod_blackforms fieldset,
 section#content.gradient_gray fieldset,
 div.fc_blocks_content div.ui-state-highlight{margin-left:10px;padding:15px;}
 div.fc_blocks_content div#mod_blackforms legend,
-section#content.gradient_gray legend{margin-left:15px;text-shadow:none;width:auto;}
+section#content.gradient_gray legend{margin-left:15px;text-shadow:none;width:auto;padding: 5px 10px;}
 div.fc_blocks_content div#mod_blackforms label,
 section#content.gradient_gray label{vertical-align: top;}
 div.fc_blocks_content div#mod_blackforms .fbselect,

@@ -210,6 +210,15 @@ if(typeof jQuery != 'undefined')
                 dialog2.find('input#display_name').val(field);
                 dialog2.find('input#style').val($(this).parent().find('input,select,textarea').attr('style'));
                 dialog2.find('input#type').val($('#'+field).prop('tagName').toLowerCase());
+                if($('#'+field).prop('tagName').toLowerCase() == "input") {
+                    dialog2.find('select#html5attr option[value="' + $('#'+field).prop('type').toLowerCase() + '"]')
+                           .attr('selected','selected');
+                    dialog2.find('select#html5attr').show();
+                    dialog2.find('label[for="html5attr"]').show();
+                } else {
+                    dialog2.find('select#html5attr').val("").hide();
+                    dialog2.find('label[for="html5attr"]').hide();
+                }
                 var text  = $(this).parent().find('.fblabel').text();
                 dialog2.find('input#label').val(text);
                 var info  = $(this).parent().find('.fbinfo').prop('title');

@@ -100,15 +100,21 @@ if($val->get('_REQUEST','do') != 'remove')
 // *********************************************************************
 // get database connection
 // *********************************************************************
-$db = \wblib\wbQuery::getInstance(
-    array(
-        'host'   => CAT_DB_HOST,
-        'user'   => CAT_DB_USERNAME,
-        'pass'   => CAT_DB_PASSWORD,
-        'dbname' => CAT_DB_NAME,
-        'prefix' => CAT_TABLE_PREFIX,
-    )
-);
+if(version_compare(CAT_VERSION,'1.2','>=')) {
+    $db = \wblib\wbQuery::getInstance(CAT_Helper_DB::getConfig());
+}
+else {
+    $db = \wblib\wbQuery::getInstance(
+        array(
+            'host'   => CAT_DB_HOST,
+            'user'   => CAT_DB_USERNAME,
+            'pass'   => CAT_DB_PASSWORD,
+            'dbname' => CAT_DB_NAME,
+            'prefix' => CAT_TABLE_PREFIX,
+            'port'   => CAT_DB_PORT,
+        )
+    );
+}
 
 // *********************************************************************
 // get current preset data
@@ -175,6 +181,10 @@ if(count($r))
             'label'    => $label,
         );
 
+        if($val->get('_REQUEST','title')) {
+            $elem['title'] = $val->get('_REQUEST','title','string');
+        }
+
         if($type=='radiogroup' || $type=='select' || $type=='checkboxgroup')
         {
             if($options)
@@ -226,7 +236,9 @@ if(count($r))
             {
                 if(isset($e['name']) && $e['name'] == $name)
                 {
-                    if($type=='')
+                    if($val->get('_REQUEST','html5attr'))
+                        $elem['type'] = $val->get('_REQUEST','html5attr');
+                    elseif($type=='')
                         $elem['type'] = $e['type'];
                     $data[$i] = $elem;
                     break;
